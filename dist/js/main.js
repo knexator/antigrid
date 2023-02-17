@@ -11028,7 +11028,7 @@ var import_math_helper = __toESM(require_math_helper());
 var CONFIG = {
   resolution: 3,
   tile_size: 80,
-  grid_offset: new import_vector2.default(-80, -80),
+  grid_offset: new import_vector2.default(-120, -40),
   spring: 1,
   force: 90,
   friction: 8.5,
@@ -11043,7 +11043,7 @@ gui.add(CONFIG, "friction", 0, 10);
 gui.hide();
 await import_shaku.default.init();
 document.body.appendChild(import_shaku.default.gfx.canvas);
-import_shaku.default.gfx.setResolution(800, 600, true);
+import_shaku.default.gfx.setResolution(720, 640, true);
 import_shaku.default.gfx.centerCanvas();
 var DIRS = [
   import_vector2.default.right,
@@ -11087,8 +11087,8 @@ var Grid = class {
   tiles;
   corners;
   draw() {
-    for (let j = 0; j < this.h; j++) {
-      for (let i = 0; i < this.w; i++) {
+    for (let j = 1; j < this.h - 1; j++) {
+      for (let i = 2; i < this.w - 2; i++) {
         let tile = this.tiles[j][i];
         if (tile.wall) {
           let N = 10;
@@ -11416,7 +11416,7 @@ var Peg = class {
   }
   used;
   draw() {
-    import_shaku.default.gfx.outlineCircle(new import_circle.default(grid.frame2screen(new Frame(this.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.1), import_color.default.black);
+    import_shaku.default.gfx.outlineCircle(new import_circle.default(grid.frame2screen(new Frame(this.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.13), import_color.default.black);
   }
 };
 var Stairs = class {
@@ -11497,7 +11497,7 @@ var stairs = [
   new Stairs(grid.tiles[5][8]),
   new Stairs(grid.tiles[6][8])
 ];
-var player = new Player(new Frame(grid.tiles[4][6], import_vector2.default.half, 0));
+var player = new Player(new Frame(grid.tiles[4][4], import_vector2.default.half, 0));
 function stopHolding() {
   if (player.holding) {
     if (player.holding_side === 1) {
@@ -11521,9 +11521,19 @@ function step() {
     if (mouse_frame && import_shaku.default.input.pressed("t")) {
       player.frame.tile = mouse_frame.tile;
     }
-    if (import_shaku.default.input.pressed("r")) {
+    if (import_shaku.default.input.pressed("f")) {
       player.frame.rotccw();
     }
+  }
+  if (import_shaku.default.input.pressed("r")) {
+    player = new Player(new Frame(grid.tiles[4][4], import_vector2.default.half, 0));
+    pegs.forEach((x) => {
+      x.used = false;
+    });
+    gimmicks = [
+      new Gimmick(grid.tiles[4][3], 3, pegs[0], pegs[1]),
+      new Gimmick(grid.tiles[4][5], 0, pegs[3], pegs[4])
+    ];
   }
   let input_x = (import_shaku.default.input.down(["d", "right"]) ? 1 : 0) - (import_shaku.default.input.down(["a", "left"]) ? 1 : 0);
   if (input_x === 0) {
@@ -11541,7 +11551,8 @@ function step() {
     }
   }
   let input_y = (import_shaku.default.input.down(["s", "down"]) ? 1 : 0) - (import_shaku.default.input.down(["w", "up"]) ? 1 : 0);
-  if (input_y !== 0 && stairs.some((x) => x.tile === player.frame.tile)) {
+  let in_stairs = stairs.some((x) => x.tile === player.frame.tile && x.vertical === (player.frame.dir % 2 === 0));
+  if (input_y !== 0 && in_stairs) {
     let next_frame = player.frame.clone().move(1, Math.sign(input_y) * 0.3);
     let wall_frame = player.frame.clone().move(1, Math.sign(input_y) * 0.5);
     if (wall_frame === null || !wall_frame.tile.wall) {
@@ -11550,12 +11561,17 @@ function step() {
       }
     }
   } else {
-    let asdf = 0.5 - player.frame.pos.y;
-    if (Math.abs(asdf) > 0.01) {
-      player.frame.move(1, Math.sign(0.5 - player.frame.pos.y) * import_shaku.default.gameTime.delta * 2 * CONFIG.player_speed * (player.holding === null ? 1 : 0.5));
-      if (Math.sign(asdf) !== Math.sign(0.5 - player.frame.pos.y)) {
-        player.frame.pos.y = 0.5;
+    let floor_frame = player.frame.clone().move(1, 0.6);
+    if (in_stairs || floor_frame === null || floor_frame.tile.wall || Math.abs(player.frame.pos.x - 0.5) > 0.2) {
+      let asdf = 0.5 - player.frame.pos.y;
+      if (Math.abs(asdf) > 0.01) {
+        player.frame.move(1, Math.sign(0.5 - player.frame.pos.y) * import_shaku.default.gameTime.delta * 2 * CONFIG.player_speed * (player.holding === null ? 1 : 0.5));
+        if (Math.sign(asdf) !== Math.sign(0.5 - player.frame.pos.y)) {
+          player.frame.pos.y = 0.5;
+        }
       }
+    } else {
+      player.frame.move(1, import_shaku.default.gameTime.delta * 2 * CONFIG.player_speed * (player.holding === null ? 1 : 0.5));
     }
   }
   if (player.holding !== null) {

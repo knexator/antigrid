@@ -15,7 +15,7 @@ const CONFIG = {
     // Grid visuals
     resolution: 3,
     tile_size: 80,
-    grid_offset: new Vector2(-80, -80),
+    grid_offset: new Vector2(-120, -40),
 
     // Grid elasticity
     spring: 1.0,
@@ -40,7 +40,7 @@ await Shaku.init();
 
 // add shaku's canvas to document and set resolution to 800x600
 document.body.appendChild(Shaku!.gfx!.canvas);
-Shaku.gfx!.setResolution(800, 600, true);
+Shaku.gfx!.setResolution(720, 640, true);
 Shaku.gfx!.centerCanvas();
 // Shaku.gfx!.maximizeCanvasSize(false, false);
 
@@ -117,8 +117,8 @@ class Grid {
     }
 
     draw() {
-        for (let j = 0; j < this.h; j++) {
-            for (let i = 0; i < this.w; i++) {
+        for (let j = 1; j < this.h - 1; j++) {
+            for (let i = 2; i < this.w - 2; i++) {
                 let tile = this.tiles[j][i];
                 if (tile.wall) {
                     // todo: fill with solid color instead
@@ -656,7 +656,7 @@ class Peg {
     }
 
     draw() {
-        Shaku.gfx.outlineCircle(new Circle(grid.frame2screen(new Frame(this.tile, Vector2.half, 0)), CONFIG.tile_size * .1), Color.black);
+        Shaku.gfx.outlineCircle(new Circle(grid.frame2screen(new Frame(this.tile, Vector2.half, 0)), CONFIG.tile_size * .13), Color.black);
     }
 }
 
@@ -758,7 +758,7 @@ let stairs = [
     new Stairs(grid.tiles[6][8]),
 ]
 
-let player = new Player(new Frame(grid.tiles[4][6], Vector2.half, 0));
+let player = new Player(new Frame(grid.tiles[4][4], Vector2.half, 0));
 
 function stopHolding() {
     if (player.holding) {
@@ -789,10 +789,23 @@ function step() {
         if (mouse_frame && Shaku.input.pressed("t")) {
             player.frame.tile = mouse_frame.tile;
         }
-        if (Shaku.input.pressed("r")) {
+        if (Shaku.input.pressed("f")) {
             player.frame.rotccw();
         }
     }
+
+    if (Shaku.input.pressed("r")) {
+        // hacky reset
+        player = new Player(new Frame(grid.tiles[4][4], Vector2.half, 0));
+        pegs.forEach(x => {
+            x.used = false;
+        });
+        gimmicks = [
+            new Gimmick(grid.tiles[4][3], 3, pegs[0], pegs[1]),
+            new Gimmick(grid.tiles[4][5], 0, pegs[3], pegs[4]),
+        ];
+    }
+
 
     let input_x = (Shaku.input.down(["d", "right"]) ? 1 : 0) - (Shaku.input.down(["a", "left"]) ? 1 : 0);
     if (input_x === 0) {
@@ -813,7 +826,8 @@ function step() {
     }
 
     let input_y = (Shaku.input.down(["s", "down"]) ? 1 : 0) - (Shaku.input.down(["w", "up"]) ? 1 : 0);
-    if (input_y !== 0 && stairs.some(x => x.tile === player.frame.tile)) {
+    let in_stairs = stairs.some(x => x.tile === player.frame.tile && x.vertical === (player.frame.dir % 2 === 0));
+    if (input_y !== 0 && in_stairs) {
         // todo: distinguish vertical/horizontal stairs
         let next_frame = player.frame.clone().move(1, Math.sign(input_y) * .3);
         let wall_frame = player.frame.clone().move(1, Math.sign(input_y) * .5);
@@ -824,13 +838,20 @@ function step() {
             }
         }
     } else {
-        let asdf = .5 - player.frame.pos.y
-        if (Math.abs(asdf) > .01) {
-            player.frame.move(1, Math.sign(.5 - player.frame.pos.y) * Shaku.gameTime.delta * 2 * CONFIG.player_speed
-                * ((player.holding === null) ? 1 : .5));
-            if (Math.sign(asdf) !== Math.sign(.5 - player.frame.pos.y)) {
-                player.frame.pos.y = .5;
+        let floor_frame = player.frame.clone().move(1, .6);
+        if (in_stairs || floor_frame === null || floor_frame.tile.wall || Math.abs(player.frame.pos.x - .5) > .2) {
+            let asdf = .5 - player.frame.pos.y
+            if (Math.abs(asdf) > .01) {
+                player.frame.move(1, Math.sign(.5 - player.frame.pos.y) * Shaku.gameTime.delta * 2 * CONFIG.player_speed
+                    * ((player.holding === null) ? 1 : .5));
+                if (Math.sign(asdf) !== Math.sign(.5 - player.frame.pos.y)) {
+                    player.frame.pos.y = .5;
+                }
             }
+        } else {
+            // fall
+            player.frame.move(1, Shaku.gameTime.delta * 2 * CONFIG.player_speed
+                * ((player.holding === null) ? 1 : .5));
         }
     }
 
