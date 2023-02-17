@@ -15,8 +15,8 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
-  isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target,
+var __toESM = (mod2, isNodeMode, target2) => (target2 = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
+  isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target2, "default", { value: mod2, enumerable: true }) : target2,
   mod2
 ));
 
@@ -2124,8 +2124,8 @@ var require_animator = __commonJS({
     "use strict";
     var _autoAnimators = [];
     var Animator = class {
-      constructor(target) {
-        this._target = target;
+      constructor(target2) {
+        this._target = target2;
         this._fromValues = {};
         this._toValues = {};
         this._progress = 0;
@@ -8614,27 +8614,27 @@ var ARR_EACH = Array.prototype.forEach;
 var ARR_SLICE = Array.prototype.slice;
 var Common = {
   BREAK: {},
-  extend: function extend(target) {
+  extend: function extend(target2) {
     this.each(ARR_SLICE.call(arguments, 1), function(obj) {
       var keys = this.isObject(obj) ? Object.keys(obj) : [];
       keys.forEach(function(key) {
         if (!this.isUndefined(obj[key])) {
-          target[key] = obj[key];
+          target2[key] = obj[key];
         }
       }.bind(this));
     }, this);
-    return target;
+    return target2;
   },
-  defaults: function defaults(target) {
+  defaults: function defaults(target2) {
     this.each(ARR_SLICE.call(arguments, 1), function(obj) {
       var keys = this.isObject(obj) ? Object.keys(obj) : [];
       keys.forEach(function(key) {
-        if (this.isUndefined(target[key])) {
-          target[key] = obj[key];
+        if (this.isUndefined(target2[key])) {
+          target2[key] = obj[key];
         }
       }.bind(this));
     }, this);
-    return target;
+    return target2;
   },
   compose: function compose() {
     var toCall = ARR_SLICE.call(arguments);
@@ -9029,14 +9029,14 @@ var classCallCheck = function(instance, Constructor) {
   }
 };
 var createClass = function() {
-  function defineProperties(target, props) {
+  function defineProperties(target2, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
       descriptor.enumerable = descriptor.enumerable || false;
       descriptor.configurable = true;
       if ("value" in descriptor)
         descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
+      Object.defineProperty(target2, descriptor.key, descriptor);
     }
   }
   return function(Constructor, protoProps, staticProps) {
@@ -9116,8 +9116,8 @@ var Color = function() {
   }]);
   return Color3;
 }();
-function defineRGBComponent(target, component, componentHexIndex) {
-  Object.defineProperty(target, component, {
+function defineRGBComponent(target2, component, componentHexIndex) {
+  Object.defineProperty(target2, component, {
     get: function get$$13() {
       if (this.__state.space === "RGB") {
         return this.__state[component];
@@ -9134,8 +9134,8 @@ function defineRGBComponent(target, component, componentHexIndex) {
     }
   });
 }
-function defineHSVComponent(target, component) {
-  Object.defineProperty(target, component, {
+function defineHSVComponent(target2, component) {
+  Object.defineProperty(target2, component, {
     get: function get$$13() {
       if (this.__state.space === "HSV") {
         return this.__state[component];
@@ -11028,7 +11028,7 @@ var import_math_helper = __toESM(require_math_helper());
 var CONFIG = {
   resolution: 3,
   tile_size: 80,
-  grid_offset: new import_vector2.default(0, 0),
+  grid_offset: new import_vector2.default(-80, -80),
   spring: 1,
   force: 90,
   friction: 8.5,
@@ -11440,27 +11440,64 @@ var Stairs = class {
     }
   }
 };
-var grid = new Grid(8, 8);
-grid.tiles[5][2].wall = true;
+var Target = class {
+  constructor(tile, direction) {
+    this.tile = tile;
+    this.direction = direction;
+  }
+  draw() {
+    let frame = new Frame(this.tile, import_vector2.default.half, this.direction);
+    import_shaku2.gfx.drawLinesStrip([
+      grid.frame2screen(frame.clone().move(0, -0.25).move(1, -0.5)),
+      grid.frame2screen(frame.clone().move(0, -0.25).move(1, 0.25)),
+      grid.frame2screen(frame.clone().move(0, 0.25).move(1, 0.25)),
+      grid.frame2screen(frame.clone().move(0, 0.25).move(1, -0.5))
+    ], import_color.default.magenta);
+  }
+};
+var grid = new Grid(12, 9);
+for (let k = 2; k <= 9; k++) {
+  grid.tiles[7][k].wall = true;
+}
+for (let k = 2; k <= 6; k++) {
+  grid.tiles[1][k].wall = true;
+}
+for (let k = 7; k <= 9; k++) {
+  grid.tiles[3][k].wall = true;
+}
+for (let k = 1; k <= 6; k++) {
+  grid.tiles[k][2].wall = true;
+}
+for (let k = 4; k <= 6; k++) {
+  grid.tiles[k][9].wall = true;
+}
+grid.tiles[2][6].wall = true;
+grid.tiles[3][6].wall = true;
+grid.tiles[5][4].wall = true;
+grid.tiles[5][6].wall = true;
+grid.tiles[5][7].wall = true;
+var target = new Target(grid.tiles[2][3], 3);
 var pegs = [
-  new Peg(grid.tiles[2][3]),
-  new Peg(grid.tiles[1][2]),
-  new Peg(grid.tiles[1][4]),
-  new Peg(grid.tiles[3][4]),
-  new Peg(grid.tiles[2][5]),
   new Peg(grid.tiles[4][4]),
-  new Peg(grid.tiles[2][4])
+  new Peg(grid.tiles[3][3]),
+  new Peg(grid.tiles[3][5]),
+  new Peg(grid.tiles[5][5]),
+  new Peg(grid.tiles[4][6]),
+  new Peg(grid.tiles[4][7])
 ];
 var gimmicks = [
-  new Gimmick(grid.tiles[2][2], 3, pegs[0], pegs[1]),
-  new Gimmick(grid.tiles[2][4], 0, pegs[3], pegs[4])
+  new Gimmick(grid.tiles[4][3], 3, pegs[0], pegs[1]),
+  new Gimmick(grid.tiles[4][5], 0, pegs[3], pegs[4])
 ];
 var stairs = [
-  new Stairs(grid.tiles[2][2]),
-  new Stairs(grid.tiles[3][2]),
-  new Stairs(grid.tiles[4][2])
+  new Stairs(grid.tiles[4][3]),
+  new Stairs(grid.tiles[5][3]),
+  new Stairs(grid.tiles[6][3]),
+  new Stairs(grid.tiles[4][8]),
+  new Stairs(grid.tiles[5][8]),
+  new Stairs(grid.tiles[6][8])
 ];
-var player = new Player(new Frame(grid.tiles[2][5], import_vector2.default.half, 0));
+var player = new Player(new Frame(grid.tiles[4][6], import_vector2.default.half, 0));
 function stopHolding() {
   if (player.holding) {
     if (player.holding_side === 1) {
@@ -11616,6 +11653,7 @@ function step() {
     );
   });
   grid.draw();
+  target.draw();
   stairs.forEach((x) => x.draw());
   pegs.forEach((x) => x.draw());
   gimmicks.forEach((x) => x.draw());

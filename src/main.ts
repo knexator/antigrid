@@ -15,7 +15,7 @@ const CONFIG = {
     // Grid visuals
     resolution: 3,
     tile_size: 80,
-    grid_offset: new Vector2(0, 0),
+    grid_offset: new Vector2(-80, -80),
 
     // Grid elasticity
     spring: 1.0,
@@ -687,41 +687,78 @@ class Stairs {
     }
 }
 
-let grid = new Grid(8, 8);
-/*for (let j = 0; j < grid.h; j++) {
-    for (let i = 0; i < grid.w; i++) {
-        grid.tiles[j][i].updateSprites();
-    }
-}*/
-// grid.tiles[3][7].wall = false;
+class Target {
+    constructor(
+        public tile: Tile,
+        public direction: direction,
+    ) { }
 
-grid.tiles[5][2].wall = true;
+    draw() {
+        let frame = new Frame(this.tile, Vector2.half, this.direction);
+
+        gfx.drawLinesStrip([
+            grid.frame2screen(frame.clone().move(0, -.25)!.move(1, -.5)!),
+            grid.frame2screen(frame.clone().move(0, -.25)!.move(1, .25)!),
+            grid.frame2screen(frame.clone().move(0, .25)!.move(1, .25)!),
+            grid.frame2screen(frame.clone().move(0, .25)!.move(1, -.5)!),
+        ], Color.magenta);
+    }
+}
+
+
+let grid = new Grid(12, 9);
+for (let k = 2; k <= 9; k++) {
+    grid.tiles[7][k].wall = true;
+}
+for (let k = 2; k <= 6; k++) {
+    grid.tiles[1][k].wall = true;
+}
+for (let k = 7; k <= 9; k++) {
+    grid.tiles[3][k].wall = true;
+}
+for (let k = 1; k <= 6; k++) {
+    grid.tiles[k][2].wall = true;
+}
+for (let k = 4; k <= 6; k++) {
+    grid.tiles[k][9].wall = true;
+}
+grid.tiles[2][6].wall = true;
+grid.tiles[3][6].wall = true;
+grid.tiles[5][4].wall = true;
+grid.tiles[5][6].wall = true;
+grid.tiles[5][7].wall = true;
+
+let target = new Target(grid.tiles[2][3], 3);
 
 let pegs = [
-    new Peg(grid.tiles[2][3]),
-    new Peg(grid.tiles[1][2]),
-    new Peg(grid.tiles[1][4]),
-
-    new Peg(grid.tiles[3][4]),
-    new Peg(grid.tiles[2][5]),
     new Peg(grid.tiles[4][4]),
+    new Peg(grid.tiles[3][3]),
+    new Peg(grid.tiles[3][5]),
 
-    new Peg(grid.tiles[2][4]),
+    new Peg(grid.tiles[5][5]),
+    new Peg(grid.tiles[4][6]),
+    new Peg(grid.tiles[4][7]),
+
+    // new Peg(grid.tiles[2][4]),
 ];
 
 let gimmicks: Gimmick[] = [
-    new Gimmick(grid.tiles[2][2], 3, pegs[0], pegs[1]),
+    new Gimmick(grid.tiles[4][3], 3, pegs[0], pegs[1]),
 
-    new Gimmick(grid.tiles[2][4], 0, pegs[3], pegs[4]),
+    new Gimmick(grid.tiles[4][5], 0, pegs[3], pegs[4]),
 ];
 
 let stairs = [
-    new Stairs(grid.tiles[2][2]),
-    new Stairs(grid.tiles[3][2]),
-    new Stairs(grid.tiles[4][2]),
+    new Stairs(grid.tiles[4][3]),
+    new Stairs(grid.tiles[5][3]),
+    new Stairs(grid.tiles[6][3]),
+
+    new Stairs(grid.tiles[4][8]),
+    new Stairs(grid.tiles[5][8]),
+    new Stairs(grid.tiles[6][8]),
 ]
 
-let player = new Player(new Frame(grid.tiles[2][5], Vector2.half, 0));
+let player = new Player(new Frame(grid.tiles[4][6], Vector2.half, 0));
 
 function stopHolding() {
     if (player.holding) {
@@ -911,6 +948,7 @@ function step() {
         // }
     });
     grid.draw();
+    target.draw();
     stairs.forEach(x => x.draw());
     pegs.forEach(x => x.draw());
     gimmicks.forEach(x => x.draw());
