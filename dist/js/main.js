@@ -10541,13 +10541,39 @@ var Grid = class {
       for (let i = 2; i < this.w - 2; i++) {
         let tile = this.tiles[j][i];
         if (tile.wall) {
-          let N = 10;
+          let N = 5;
           for (let k = 0; k <= N; k++) {
             import_shaku2.gfx.drawLines([
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 * k / N, 0), 0)),
               this.frame2screen(new Frame(tile, new import_vector2.default(0, k / N), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 + 0.5 * k / N, 0), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 * k / N, 1), 0)),
               this.frame2screen(new Frame(tile, new import_vector2.default(1, k / N), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(k / N, 0), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(k / N, 1), 0))
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 + 0.5 * k / N, 1), 0))
+            ], import_color.default.black);
+          }
+          if (i === 2) {
+            import_shaku2.gfx.drawLines([
+              this.frame2screen(new Frame(tile, import_vector2.default.zero, 0)),
+              this.frame2screen(new Frame(tile, import_vector2.default.down, 0))
+            ], import_color.default.black);
+          }
+          if (i === this.w - 3) {
+            import_shaku2.gfx.drawLines([
+              this.frame2screen(new Frame(tile, import_vector2.default.right, 0)),
+              this.frame2screen(new Frame(tile, import_vector2.default.one, 0))
+            ], import_color.default.black);
+          }
+          if (j === 1) {
+            import_shaku2.gfx.drawLines([
+              this.frame2screen(new Frame(tile, import_vector2.default.zero, 0)),
+              this.frame2screen(new Frame(tile, import_vector2.default.right, 0))
+            ], import_color.default.black);
+          }
+          if (j === this.h - 2) {
+            import_shaku2.gfx.drawLines([
+              this.frame2screen(new Frame(tile, import_vector2.default.one, 0)),
+              this.frame2screen(new Frame(tile, import_vector2.default.down, 0))
             ], import_color.default.black);
           }
         } else {

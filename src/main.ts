@@ -122,14 +122,45 @@ class Grid {
                 let tile = this.tiles[j][i];
                 if (tile.wall) {
                     // todo: fill with solid color instead
-                    let N = 10;
+                    let N = 5;
                     for (let k = 0; k <= N; k++) {
                         gfx.drawLines([
+                            this.frame2screen(new Frame(tile, new Vector2(.5 * k / N, 0), 0)),
                             this.frame2screen(new Frame(tile, new Vector2(0, k / N), 0)),
-                            this.frame2screen(new Frame(tile, new Vector2(1, k / N), 0)),
 
-                            this.frame2screen(new Frame(tile, new Vector2(k / N, 0), 0)),
-                            this.frame2screen(new Frame(tile, new Vector2(k / N, 1), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(.5 + .5 * k / N, 0), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(.5 * k / N, 1), 0)),
+
+                            this.frame2screen(new Frame(tile, new Vector2(1, k / N), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(.5 + .5 * k / N, 1), 0)),
+                        ], Color.black);
+                    }
+
+                    if (i === 2) {
+                        gfx.drawLines([
+                            this.frame2screen(new Frame(tile, Vector2.zero, 0)),
+                            this.frame2screen(new Frame(tile, Vector2.down, 0)),
+                        ], Color.black);
+                    }
+
+                    if (i === this.w - 3) {
+                        gfx.drawLines([
+                            this.frame2screen(new Frame(tile, Vector2.right, 0)),
+                            this.frame2screen(new Frame(tile, Vector2.one, 0)),
+                        ], Color.black);
+                    }
+
+                    if (j === 1) {
+                        gfx.drawLines([
+                            this.frame2screen(new Frame(tile, Vector2.zero, 0)),
+                            this.frame2screen(new Frame(tile, Vector2.right, 0)),
+                        ], Color.black);
+                    }
+
+                    if (j === this.h - 2) {
+                        gfx.drawLines([
+                            this.frame2screen(new Frame(tile, Vector2.one, 0)),
+                            this.frame2screen(new Frame(tile, Vector2.down, 0)),
                         ], Color.black);
                     }
                 } else {
@@ -265,24 +296,6 @@ class Corner {
         this.vel = Vector2.zero;
         this.force = Vector2.zero;
     }
-
-    /*updatePos() {
-        // if (this.i !== 3 && this.i !== 4) return;
-        // if (this.j !== 3 && this.j !== 4) return;
-        if (this.i === 3 && this.j === 3) {
-            this.pos.copy(OFFSET.add(TILE_SIZE * 3, TILE_SIZE * 3).add(new Vector2(.5, .5).mulSelf(TILE_SIZE * THINGY)));
-        }
-        if (this.i === 4 && this.j === 4) {
-            this.pos.copy(OFFSET.add(TILE_SIZE * 4, TILE_SIZE * 4).add(new Vector2(-.5, -.5).mulSelf(TILE_SIZE * THINGY)));
-        }
-
-        if (this.i === 3 && this.j === 4) {
-            this.pos.copy(OFFSET.add(TILE_SIZE * 3, TILE_SIZE * 4).add(new Vector2(-.5, .5).mulSelf(TILE_SIZE * THINGY)));
-        }
-        if (this.i === 4 && this.j === 3) {
-            this.pos.copy(OFFSET.add(TILE_SIZE * 4, TILE_SIZE * 3).add(new Vector2(.5, -.5).mulSelf(TILE_SIZE * THINGY)));
-        }
-    }*/
 
     update(dt: number) {
         this.vel.addSelf(this.force.mul(dt));
