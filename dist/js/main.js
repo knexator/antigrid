@@ -1215,20 +1215,6 @@ var require_vector2 = __commonJS({
         return { x: this.x, y: this.y };
       }
     };
-    Vector22.zeroReadonly = new Vector22(0, 0);
-    Object.freeze(Vector22.zeroReadonly);
-    Vector22.oneReadonly = new Vector22(1, 1);
-    Object.freeze(Vector22.oneReadonly);
-    Vector22.halfReadonly = new Vector22(0.5, 0.5);
-    Object.freeze(Vector22.halfReadonly);
-    Vector22.leftReadonly = new Vector22(-1, 0);
-    Object.freeze(Vector22.leftReadonly);
-    Vector22.rightReadonly = new Vector22(1, 0);
-    Object.freeze(Vector22.rightReadonly);
-    Vector22.upReadonly = new Vector22(0, -1);
-    Object.freeze(Vector22.upReadonly);
-    Vector22.downReadonly = new Vector22(0, 1);
-    Object.freeze(Vector22.downReadonly);
     module.exports = Vector22;
   }
 });
@@ -1449,6 +1435,8 @@ var require_rectangle = __commonJS({
         let r1 = this;
         let r2 = other;
         return !(r2.left >= r1.right || r2.right <= r1.left || r2.top >= r1.bottom || r2.bottom <= r1.top);
+      }
+      castRect(other, direction, max_dist) {
       }
       collideLine(line) {
         if (this.containsVector(line.from) || this.containsVector(line.to)) {
@@ -1774,6 +1762,7 @@ var require_texture_asset = __commonJS({
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        this.filter = "LINEAR";
         this._texture = texture;
         this._notifyReady();
       }
@@ -1849,14 +1838,14 @@ var require_vector3 = __commonJS({
   "../Shaku/lib/utils/vector3.js"(exports, module) {
     "use strict";
     var MathHelper = require_math_helper();
-    var Vector3 = class {
+    var Vector32 = class {
       constructor(x = 0, y = 0, z2 = 0) {
         this.x = x;
         this.y = y;
         this.z = z2;
       }
       clone() {
-        return new Vector3(this.x, this.y, this.z);
+        return new Vector32(this.x, this.y, this.z);
       }
       set(x, y) {
         this.x = x;
@@ -1872,59 +1861,59 @@ var require_vector3 = __commonJS({
       }
       add(other) {
         if (typeof other === "number") {
-          return new Vector3(
+          return new Vector32(
             this.x + other,
             this.y + (arguments[1] === void 0 ? other : arguments[1]),
             this.z + (arguments[2] === void 0 ? other : arguments[2])
           );
         }
-        return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z);
+        return new Vector32(this.x + other.x, this.y + other.y, this.z + other.z);
       }
       sub(other) {
         if (typeof other === "number") {
-          return new Vector3(
+          return new Vector32(
             this.x - other,
             this.y - (arguments[1] === void 0 ? other : arguments[1]),
             this.z - (arguments[2] === void 0 ? other : arguments[2])
           );
         }
-        return new Vector3(this.x - other.x, this.y - other.y, this.z - other.z);
+        return new Vector32(this.x - other.x, this.y - other.y, this.z - other.z);
       }
       div(other) {
         if (typeof other === "number") {
-          return new Vector3(
+          return new Vector32(
             this.x / other,
             this.y / (arguments[1] === void 0 ? other : arguments[1]),
             this.z / (arguments[2] === void 0 ? other : arguments[2])
           );
         }
-        return new Vector3(this.x / other.x, this.y / other.y, this.z / other.z);
+        return new Vector32(this.x / other.x, this.y / other.y, this.z / other.z);
       }
       mul(other) {
         if (typeof other === "number") {
-          return new Vector3(
+          return new Vector32(
             this.x * other,
             this.y * (arguments[1] === void 0 ? other : arguments[1]),
             this.z * (arguments[2] === void 0 ? other : arguments[2])
           );
         }
-        return new Vector3(this.x * other.x, this.y * other.y, this.z * other.z);
+        return new Vector32(this.x * other.x, this.y * other.y, this.z * other.z);
       }
       round() {
-        return new Vector3(Math.round(this.x), Math.round(this.y), Math.round(this.z));
+        return new Vector32(Math.round(this.x), Math.round(this.y), Math.round(this.z));
       }
       floor() {
-        return new Vector3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
+        return new Vector32(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
       }
       ceil() {
-        return new Vector3(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
+        return new Vector32(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
       }
       normalized() {
         if (this.x == 0 && this.y == 0 && this.z == 0) {
-          return Vector3.zero;
+          return Vector32.zero;
         }
         let mag = this.length;
-        return new Vector3(this.x / mag, this.y / mag, this.z / mag);
+        return new Vector32(this.x / mag, this.y / mag, this.z / mag);
       }
       addSelf(other) {
         if (typeof other === "number") {
@@ -2013,41 +2002,41 @@ var require_vector3 = __commonJS({
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
       }
       scaled(fac) {
-        return new Vector3(this.x * fac, this.y * fac, this.z * fac);
+        return new Vector32(this.x * fac, this.y * fac, this.z * fac);
       }
       static get zero() {
-        return new Vector3();
+        return new Vector32();
       }
       static get one() {
-        return new Vector3(1, 1, 1);
+        return new Vector32(1, 1, 1);
       }
       static get half() {
-        return new Vector3(0.5, 0.5, 0.5);
+        return new Vector32(0.5, 0.5, 0.5);
       }
       static get left() {
-        return new Vector3(-1, 0, 0);
+        return new Vector32(-1, 0, 0);
       }
       static get right() {
-        return new Vector3(1, 0, 0);
+        return new Vector32(1, 0, 0);
       }
       static get up() {
-        return new Vector3(0, 1, 0);
+        return new Vector32(0, -1, 0);
       }
       static get down() {
-        return new Vector3(0, -1, 0);
+        return new Vector32(0, 1, 0);
       }
       static get front() {
-        return new Vector3(0, 0, -1);
+        return new Vector32(0, 0, -1);
       }
       static get back() {
-        return new Vector3(0, 0, 1);
+        return new Vector32(0, 0, 1);
       }
       distanceTo(other) {
-        return Vector3.distance(this, other);
+        return Vector32.distance(this, other);
       }
       static lerp(p1, p2, a) {
         let lerpScalar = MathHelper.lerp;
-        return new Vector3(lerpScalar(p1.x, p2.x, a), lerpScalar(p1.y, p2.y, a), lerpScalar(p1.z, p2.z, a));
+        return new Vector32(lerpScalar(p1.x, p2.x, a), lerpScalar(p1.y, p2.y, a), lerpScalar(p1.z, p2.z, a));
       }
       static distance(p1, p2) {
         let a = p1.x - p2.x;
@@ -2061,23 +2050,23 @@ var require_vector3 = __commonJS({
         let x = ay * bz - az * by;
         let y = az * bx - ax * bz;
         let z2 = ax * by - ay * bx;
-        return new Vector3(x, y, z2);
+        return new Vector32(x, y, z2);
       }
       string() {
         return this.x + "," + this.y + "," + this.z;
       }
       static parse(str) {
         let parts = str.split(",");
-        return new Vector3(parseFloat(parts[0].trim()), parseFloat(parts[1].trim()), parseFloat(parts[2].trim()));
+        return new Vector32(parseFloat(parts[0].trim()), parseFloat(parts[1].trim()), parseFloat(parts[2].trim()));
       }
       toArray() {
         return [this.x, this.y, this.z];
       }
       static fromArray(arr) {
-        return new Vector3(arr[0], arr[1], arr[2]);
+        return new Vector32(arr[0], arr[1], arr[2]);
       }
       static fromDict(data) {
-        return new Vector3(data.x || 0, data.y || 0, data.z || 0);
+        return new Vector32(data.x || 0, data.y || 0, data.z || 0);
       }
       toDict(minimized) {
         if (minimized) {
@@ -2096,25 +2085,7 @@ var require_vector3 = __commonJS({
         return { x: this.x, y: this.y, z: this.z };
       }
     };
-    Vector3.zeroReadonly = new Vector3(0, 0, 0);
-    Object.freeze(Vector3.zeroReadonly);
-    Vector3.oneReadonly = new Vector3(1, 1, 1);
-    Object.freeze(Vector3.oneReadonly);
-    Vector3.halfReadonly = new Vector3(0.5, 0.5, 0.5);
-    Object.freeze(Vector3.halfReadonly);
-    Vector3.leftReadonly = new Vector3(-1, 0, 0);
-    Object.freeze(Vector3.leftReadonly);
-    Vector3.rightReadonly = new Vector3(1, 0, 0);
-    Object.freeze(Vector3.rightReadonly);
-    Vector3.upReadonly = new Vector3(0, 1, 0);
-    Object.freeze(Vector3.upReadonly);
-    Vector3.downReadonly = new Vector3(0, -1, 0);
-    Object.freeze(Vector3.downReadonly);
-    Vector3.frontReadonly = new Vector3(0, 0, 1);
-    Object.freeze(Vector3.frontReadonly);
-    Vector3.backReadonly = new Vector3(0, 0, -1);
-    Object.freeze(Vector3.backReadonly);
-    module.exports = Vector3;
+    module.exports = Vector32;
   }
 });
 
@@ -3457,6 +3428,9 @@ var require_vertex = __commonJS({
         this.textureCoord = textureCoord || Vector22.zero;
         this.color = color || Color3.white;
       }
+      get uv() {
+        return this.textureCoord;
+      }
       transform(matrix) {
         return this;
       }
@@ -3482,14 +3456,11 @@ var require_matrix = __commonJS({
   "../Shaku/lib/gfx/matrix.js"(exports, module) {
     "use strict";
     var Vector22 = require_vector2();
-    var Vector3 = require_vector3();
     var Vertex = require_vertex();
-    var EPSILON = Number.EPSILON;
     var Matrix = class {
       constructor(values, cloneValues) {
         if (!values) {
           values = Matrix.identity.values;
-          cloneValues = true;
         }
         if (cloneValues || cloneValues === void 0) {
           this.values = values.slice(0);
@@ -3711,68 +3682,6 @@ var require_matrix = __commonJS({
           result3[3]
         ], false);
       }
-      static lookAt(eyePosition, targetPosition, upVector) {
-        const eye = eyePosition;
-        const center = targetPosition;
-        const up = upVector || Vector3.upReadonly;
-        let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
-        if (Math.abs(eye.x - center.x) < EPSILON && Math.abs(eye.y - center.y) < EPSILON && Math.abs(eye.z - center.z) < EPSILON) {
-          return Matrix.identity.clone();
-        }
-        z0 = eye.x - center.x;
-        z1 = eye.y - center.y;
-        z2 = eye.z - center.z;
-        len = 1 / Math.hypot(z0, z1, z2);
-        z0 *= len;
-        z1 *= len;
-        z2 *= len;
-        x0 = up.y * z2 - up.z * z1;
-        x1 = up.z * z0 - up.x * z2;
-        x2 = up.x * z1 - up.y * z0;
-        len = Math.hypot(x0, x1, x2);
-        if (!len) {
-          x0 = 0;
-          x1 = 0;
-          x2 = 0;
-        } else {
-          len = 1 / len;
-          x0 *= len;
-          x1 *= len;
-          x2 *= len;
-        }
-        y0 = z1 * x2 - z2 * x1;
-        y1 = z2 * x0 - z0 * x2;
-        y2 = z0 * x1 - z1 * x0;
-        len = Math.hypot(y0, y1, y2);
-        if (!len) {
-          y0 = 0;
-          y1 = 0;
-          y2 = 0;
-        } else {
-          len = 1 / len;
-          y0 *= len;
-          y1 *= len;
-          y2 *= len;
-        }
-        const out = [];
-        out[0] = x0;
-        out[1] = y0;
-        out[2] = z0;
-        out[3] = 0;
-        out[4] = x1;
-        out[5] = y1;
-        out[6] = z1;
-        out[7] = 0;
-        out[8] = x2;
-        out[9] = y2;
-        out[10] = z2;
-        out[11] = 0;
-        out[12] = -(x0 * eye.x + x1 * eye.y + x2 * eye.z);
-        out[13] = -(y0 * eye.x + y1 * eye.y + y2 * eye.z);
-        out[14] = -(z0 * eye.x + z1 * eye.y + z2 * eye.z);
-        out[15] = 1;
-        return new Matrix(out, false);
-      }
       static multiplyMany(matrices) {
         let ret = matrices[0];
         for (let i = 1; i < matrices.length; i++) {
@@ -3817,11 +3726,7 @@ var require_matrix = __commonJS({
         return ret;
       }
       static transformVertex(matrix, vertex) {
-        return new Vertex(
-          vertex.position instanceof Vector22 ? Matrix.transformVector2(matrix, vertex.position) : Matrix.transformVector3(matrix, vertex.position),
-          vertex.textureCoord,
-          vertex.color
-        );
+        return new Vertex(Matrix.transformVector2(matrix, vertex.position), vertex.textureCoord, vertex.color);
       }
       static transformVector2(matrix, vector) {
         const x = vector.x, y = vector.y, z2 = vector.z || 0;
@@ -3886,7 +3791,7 @@ var require_effect = __commonJS({
     var TextureAsset = require_texture_asset();
     var Color3 = require_color();
     var Rectangle = require_rectangle();
-    var { TextureFilterModes } = require_texture_filter_modes();
+    var { TextureFilterMode, TextureFilterModes } = require_texture_filter_modes();
     var { TextureWrapMode, TextureWrapModes } = require_texture_wrap_modes();
     var Matrix = require_matrix();
     var _logger = require_logger().getLogger("gfx-effect");
@@ -4012,7 +3917,6 @@ var require_effect = __commonJS({
         } else {
           this._gl.disable(this._gl.DITHER);
         }
-        this._gl.depthFunc(this._gl.LEQUAL);
         this._cachedValues = {};
       }
       prepareToDrawBatch(mesh, world) {
@@ -4104,36 +4008,30 @@ var require_effect = __commonJS({
           this.uniforms[uniform](matrix.values);
         }
       }
-      setViewMatrix(matrix) {
-        let uniform = this._uniformBinds[Effect.UniformBinds.View];
-        if (uniform) {
-          this.uniforms[uniform](matrix.values);
-        }
-      }
-      setPositionsAttribute(buffer, forceSetBuffer) {
+      setPositionsAttribute(buffer) {
         let attr = this._attributeBinds[Effect.AttributeBinds.Position];
         if (attr) {
-          if (!forceSetBuffer && buffer === this._cachedValues.positions) {
+          if (buffer === this._cachedValues.positions) {
             return;
           }
           this._cachedValues.positions = buffer;
           this.attributes[attr](buffer);
         }
       }
-      setTextureCoordsAttribute(buffer, forceSetBuffer) {
+      setTextureCoordsAttribute(buffer) {
         let attr = this._attributeBinds[Effect.AttributeBinds.TextureCoords];
         if (attr) {
-          if (!forceSetBuffer && buffer === this._cachedValues.coords) {
+          if (buffer === this._cachedValues.coords) {
             return;
           }
           this._cachedValues.coords = buffer;
           this.attributes[attr](buffer);
         }
       }
-      setColorsAttribute(buffer, forceSetBuffer) {
+      setColorsAttribute(buffer) {
         let attr = this._attributeBinds[Effect.AttributeBinds.Colors];
         if (attr) {
-          if (!forceSetBuffer && buffer === this._cachedValues.colors) {
+          if (buffer === this._cachedValues.colors) {
             return;
           }
           this._cachedValues.colors = buffer;
@@ -4184,7 +4082,6 @@ var require_effect = __commonJS({
       Color: "color",
       Projection: "projection",
       World: "world",
-      View: "view",
       UvOffset: "uvOffset",
       UvScale: "uvScale"
     };
@@ -4278,8 +4175,7 @@ void main(void) {
         return {
           "texture": { type: Effect.UniformTypes.Texture, bind: Effect.UniformBinds.MainTexture },
           "projection": { type: Effect.UniformTypes.Matrix, bind: Effect.UniformBinds.Projection },
-          "world": { type: Effect.UniformTypes.Matrix, bind: Effect.UniformBinds.World },
-          "view": { type: Effect.UniformTypes.Matrix, bind: Effect.UniformBinds.View }
+          "world": { type: Effect.UniformTypes.Matrix, bind: Effect.UniformBinds.World }
         };
       }
       get attributeTypes() {
@@ -4523,12 +4419,12 @@ var require_camera = __commonJS({
       }
       orthographic(region, near, far) {
         if (region === void 0) {
-          region = this._gfx.__getRenderingRegionInternal();
+          region = this._gfx.getRenderingRegion();
         }
         this._region = region;
         this.projection = Matrix.orthographic(region.left, region.right, region.bottom, region.top, near || -1, far || 400);
       }
-      perspective(fieldOfView, aspectRatio, near, far) {
+      _perspective(fieldOfView, aspectRatio, near, far) {
         this.projection = Matrix.perspective(fieldOfView || Math.PI / 2, aspectRatio || 1, near || 0.1, far || 1e3);
       }
     };
@@ -4544,7 +4440,7 @@ var require_sprite = __commonJS({
     var Color3 = require_color();
     var Rectangle = require_rectangle();
     var Vector22 = require_vector2();
-    var Vector3 = require_vector3();
+    var Vector32 = require_vector3();
     var { BlendMode, BlendModes } = require_blend_modes();
     var Sprite = class {
       constructor(texture, sourceRect) {
@@ -5094,7 +4990,7 @@ var require_sprite_batch = __commonJS({
         if (sprites.length === void 0) {
           sprites = [sprites];
         }
-        let region = cullOutOfScreen ? this._gfx.__getRenderingRegionInternal() : null;
+        let region = cullOutOfScreen ? this._gfx.getRenderingRegion() : null;
         let positions = this._positions;
         let uvs = this._uvs;
         let colors = this._colors;
@@ -5126,32 +5022,32 @@ var require_sprite_batch = __commonJS({
             }
           }
           if (sprite.static && sprite._cachedVertices) {
-            let cTopLeft = sprite._cachedVertices[0];
-            let cTopRight = sprite._cachedVertices[1];
-            let cBottomLeft = sprite._cachedVertices[2];
-            let cBottomRight = sprite._cachedVertices[3];
+            let topLeft2 = sprite._cachedVertices[0];
+            let topRight2 = sprite._cachedVertices[1];
+            let bottomLeft2 = sprite._cachedVertices[2];
+            let bottomRight2 = sprite._cachedVertices[3];
             let pi2 = this._currBatchCount * 4 * 3;
-            positions[pi2 + 0] = cTopLeft.position.x;
-            positions[pi2 + 1] = cTopLeft.position.y;
-            positions[pi2 + 2] = cTopLeft.position.z || 0;
-            positions[pi2 + 3] = cTopRight.position.x;
-            positions[pi2 + 4] = cTopRight.position.y;
-            positions[pi2 + 5] = cTopRight.position.z || 0;
-            positions[pi2 + 6] = cBottomLeft.position.x;
-            positions[pi2 + 7] = cBottomLeft.position.y;
-            positions[pi2 + 8] = cBottomLeft.position.z || 0;
-            positions[pi2 + 9] = cBottomRight.position.x;
-            positions[pi2 + 10] = cBottomRight.position.y;
-            positions[pi2 + 11] = cBottomRight.position.z || 0;
+            positions[pi2 + 0] = topLeft2.position.x;
+            positions[pi2 + 1] = topLeft2.position.y;
+            positions[pi2 + 2] = topLeft2.position.z || 0;
+            positions[pi2 + 3] = topRight2.position.x;
+            positions[pi2 + 4] = topRight2.position.y;
+            positions[pi2 + 5] = topRight2.position.z || 0;
+            positions[pi2 + 6] = bottomLeft2.position.x;
+            positions[pi2 + 7] = bottomLeft2.position.y;
+            positions[pi2 + 8] = bottomLeft2.position.z || 0;
+            positions[pi2 + 9] = bottomRight2.position.x;
+            positions[pi2 + 10] = bottomRight2.position.y;
+            positions[pi2 + 11] = bottomRight2.position.z || 0;
             let uvi2 = this._currBatchCount * 4 * 2;
-            uvs[uvi2 + 0] = cTopLeft.uv.x;
-            uvs[uvi2 + 1] = cTopLeft.uv.y;
-            uvs[uvi2 + 2] = cBottomRight.uv.x;
-            uvs[uvi2 + 3] = cTopLeft.uv.y;
-            uvs[uvi2 + 4] = cTopLeft.uv.x;
-            uvs[uvi2 + 5] = cBottomRight.uv.y;
-            uvs[uvi2 + 6] = cBottomRight.uv.x;
-            uvs[uvi2 + 7] = cBottomRight.uv.y;
+            uvs[uvi2 + 0] = topLeft2.uv.x;
+            uvs[uvi2 + 1] = topLeft2.uv.y;
+            uvs[uvi2 + 2] = bottomRight2.uv.x;
+            uvs[uvi2 + 3] = topLeft2.uv.y;
+            uvs[uvi2 + 4] = topLeft2.uv.x;
+            uvs[uvi2 + 5] = bottomRight2.uv.y;
+            uvs[uvi2 + 6] = bottomRight2.uv.x;
+            uvs[uvi2 + 7] = bottomRight2.uv.y;
             this._currBatchCount++;
             continue;
           }
@@ -5159,25 +5055,22 @@ var require_sprite_batch = __commonJS({
           let sizeY = sprite.size.y;
           let left = -sizeX * sprite.origin.x;
           let top = -sizeY * sprite.origin.y;
-          topLeft.set(left, top);
-          topRight.set(left + sizeX, top);
-          bottomLeft.set(left, top + sizeY);
-          bottomRight.set(left + sizeX, top + sizeY);
-          let axisAlined = true;
+          let topLeft = new Vector22(left, top);
+          let topRight = new Vector22(left + sizeX, top);
+          let bottomLeft = new Vector22(left, top + sizeY);
+          let bottomRight = new Vector22(left + sizeX, top + sizeY);
           if (sprite.skew) {
             if (sprite.skew.x) {
               topLeft.x += sprite.skew.x * sprite.origin.y;
               topRight.x += sprite.skew.x * sprite.origin.y;
               bottomLeft.x -= sprite.skew.x * (1 - sprite.origin.y);
               bottomRight.x -= sprite.skew.x * (1 - sprite.origin.y);
-              axisAlined = false;
             }
             if (sprite.skew.y) {
               topLeft.y += sprite.skew.y * sprite.origin.x;
               bottomLeft.y += sprite.skew.y * sprite.origin.x;
               topRight.y -= sprite.skew.y * (1 - sprite.origin.x);
               bottomRight.y -= sprite.skew.y * (1 - sprite.origin.x);
-              axisAlined = false;
             }
           }
           if (sprite.rotation) {
@@ -5192,7 +5085,6 @@ var require_sprite_batch = __commonJS({
             rotateVec(topRight);
             rotateVec(bottomLeft);
             rotateVec(bottomRight);
-            axisAlined = false;
           }
           topLeft.addSelf(sprite.position);
           topRight.addSelf(sprite.position);
@@ -5207,7 +5099,7 @@ var require_sprite_batch = __commonJS({
           let z2 = sprite.position.z || 0;
           let zDepth = sprite.size.z || 0;
           if (cullOutOfScreen) {
-            let destRect = axisAlined ? new Rectangle(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y) : Rectangle.fromPoints([topLeft, topRight, bottomLeft, bottomRight]);
+            let destRect = Rectangle.fromPoints([topLeft, topRight, bottomLeft, bottomRight]);
             if (!region.collideRect(destRect)) {
               continue;
             }
@@ -5259,10 +5151,10 @@ var require_sprite_batch = __commonJS({
           }
           if (sprite.static) {
             sprite._cachedVertices = [
-              { position: topLeft.clone(), uv: uvTl || { x: 0, y: 0 } },
-              { position: topRight.clone() },
-              { position: bottomLeft.clone() },
-              { position: bottomRight.clone(), uv: uvBr || { x: 1, y: 1 } }
+              { position: topLeft, uv: uvTl || { x: 0, y: 0 } },
+              { position: topRight },
+              { position: bottomLeft },
+              { position: bottomRight, uv: uvBr || { x: 1, y: 1 } }
             ];
           }
           this._currBatchCount++;
@@ -5283,23 +5175,23 @@ var require_sprite_batch = __commonJS({
           colors[ci + 2] = vertex.color.b;
           colors[ci + 3] = vertex.color.a;
         }
-        let topLeft2 = vertices[0].position;
-        let topRight2 = vertices[1].position;
-        let bottomLeft2 = vertices[2].position;
-        let bottomRight2 = vertices[3].position;
+        let topLeft = vertices[0].position;
+        let topRight = vertices[1].position;
+        let bottomLeft = vertices[2].position;
+        let bottomRight = vertices[3].position;
         let pi = this._currBatchCount * 4 * 3;
-        positions[pi + 0] = topLeft2.x;
-        positions[pi + 1] = topLeft2.y;
-        positions[pi + 2] = topLeft2.z || 0;
-        positions[pi + 3] = topRight2.x;
-        positions[pi + 4] = topRight2.y;
-        positions[pi + 5] = topRight2.z || 0;
-        positions[pi + 6] = bottomLeft2.x;
-        positions[pi + 7] = bottomLeft2.y;
-        positions[pi + 8] = bottomLeft2.z || 0;
-        positions[pi + 9] = bottomRight2.x;
-        positions[pi + 10] = bottomRight2.y;
-        positions[pi + 11] = bottomRight2.z || 0;
+        positions[pi + 0] = topLeft.x;
+        positions[pi + 1] = topLeft.y;
+        positions[pi + 2] = topLeft.z || 0;
+        positions[pi + 3] = topRight.x;
+        positions[pi + 4] = topRight.y;
+        positions[pi + 5] = topRight.z || 0;
+        positions[pi + 6] = bottomLeft.x;
+        positions[pi + 7] = bottomLeft.y;
+        positions[pi + 8] = bottomLeft.z || 0;
+        positions[pi + 9] = bottomRight.x;
+        positions[pi + 10] = bottomRight.y;
+        positions[pi + 11] = bottomRight.z || 0;
         let uvi = this._currBatchCount * (4 * 2);
         uvs[uvi++] = vertices[0].textureCoord.x / this._currTexture.width;
         uvs[uvi++] = vertices[0].textureCoord.y / this._currTexture.height;
@@ -5327,47 +5219,37 @@ var require_sprite_batch = __commonJS({
         if (this._effect !== this._gfx._activeEffect) {
           _logger.error("Effect changed while drawing batch!");
         }
-        this._gfx._activeEffect._cachedValues = {};
         this._gfx._setBlendMode(this._currBlend);
-        let shouldSliceArrays = this._gfx.webglVersion < 2 && this._currBatchCount < this.batchSpritesCount / 2;
-        this._gfx._activeEffect.setWorldMatrix(transform || Matrix.identity);
-        this._gfx._activeEffect.setPositionsAttribute(positionBuffer, true);
+        let mesh = new Mesh(positionBuffer, textureCoordBuffer, colorsBuffer, indexBuffer, this._currBatchCount * 6);
+        this._gfx._activeEffect.prepareToDrawBatch(mesh, transform || Matrix.identity);
+        this._gfx._setActiveTexture(this._currTexture);
+        let shouldSliceArrays = this._currBatchCount < this.batchSpritesCount / 2;
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.bufferData(
           gl.ARRAY_BUFFER,
           shouldSliceArrays ? positionArray.slice(0, this._currBatchCount * 4 * 3) : positionArray,
-          gl.DYNAMIC_DRAW,
-          0,
-          this._currBatchCount * 4 * 3
+          gl.DYNAMIC_DRAW
         );
-        this._gfx._activeEffect.setTextureCoordsAttribute(textureCoordBuffer, true);
+        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
         gl.bufferData(
           gl.ARRAY_BUFFER,
           shouldSliceArrays ? textureArray.slice(0, this._currBatchCount * 4 * 2) : textureArray,
-          gl.DYNAMIC_DRAW,
-          0,
-          this._currBatchCount * 4 * 2
+          gl.DYNAMIC_DRAW
         );
-        this._gfx._activeEffect.setColorsAttribute(colorsBuffer, true);
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorsBuffer);
         gl.bufferData(
           gl.ARRAY_BUFFER,
           shouldSliceArrays ? colorsArray.slice(0, this._currBatchCount * 4 * 4) : colorsArray,
-          gl.DYNAMIC_DRAW,
-          0,
-          this._currBatchCount * 4 * 4
+          gl.DYNAMIC_DRAW
         );
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         this._currIndices = null;
-        this._gfx._setActiveTexture(this._currTexture);
         gl.drawElements(gl.TRIANGLES, this._currBatchCount * 6, gl.UNSIGNED_SHORT, 0);
         this._gfx._drawCallsCount++;
         this._gfx._drawQuadsCount += this._currBatchCount;
         this._currBatchCount = 0;
       }
     };
-    var topLeft = new Vector22(0, 0);
-    var topRight = new Vector22(0, 0);
-    var bottomLeft = new Vector22(0, 0);
-    var bottomRight = new Vector22(0, 0);
     module.exports = SpriteBatch;
   }
 });
@@ -5396,7 +5278,7 @@ var require_gfx = __commonJS({
     var Mesh = require_mesh();
     var Circle2 = require_circle();
     var SpriteBatch = require_sprite_batch();
-    var Vector3 = require_vector3();
+    var Vector32 = require_vector3();
     var Vertex = require_vertex();
     var _whiteColor = Color3.white;
     var _logger = require_logger().getLogger("gfx");
@@ -5423,11 +5305,6 @@ var require_gfx = __commonJS({
         this._drawCallsCount = 0;
         this._drawQuadsCount = 0;
         this.spritesBatch = null;
-        this._cachedRenderingRegion = {};
-        this._webglVersion = 0;
-      }
-      get webglVersion() {
-        return this._webglVersion;
       }
       get batchSpritesCount() {
         return 2048;
@@ -5439,9 +5316,7 @@ var require_gfx = __commonJS({
         if (this._gl) {
           throw new Error("Can't call setContextAttributes() after gfx was initialized!");
         }
-        for (let key in flags) {
-          this._initSettings[key] = flags[key];
-        }
+        this._initSettings = flags;
       }
       setCanvas(element) {
         if (this._gl) {
@@ -5531,7 +5406,6 @@ var require_gfx = __commonJS({
       }
       setRenderTarget(texture, keepCamera) {
         this.presentBufferedData();
-        this.__resetCachedRenderingRegion();
         if (texture === null) {
           this._renderTarget = null;
           this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
@@ -5598,44 +5472,25 @@ var require_gfx = __commonJS({
       applyCamera(camera) {
         this.presentBufferedData();
         this._viewport = camera.viewport;
-        let viewport = this.__getRenderingRegionInternal(true);
+        let viewport = this.getRenderingRegion(true);
         this._gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
         this._projection = camera.projection.clone();
         if (this._activeEffect) {
           this._activeEffect.setProjectionMatrix(this._projection);
         }
-        this.__resetCachedRenderingRegion();
-      }
-      __getRenderingRegionInternal(includeOffset) {
-        if (includeOffset && this._cachedRenderingRegion.withOffset) {
-          return this._cachedRenderingRegion.withOffset;
-        }
-        if (!includeOffset && this._cachedRenderingRegion.withoutOffset) {
-          return this._cachedRenderingRegion.withoutOffset;
-        }
-        if (this._viewport) {
-          let ret2 = this._viewport.clone();
-          if (includeOffset === false) {
-            ret2.x = ret2.y = 0;
-            this._cachedRenderingRegion.withoutOffset = ret2;
-            return ret2;
-          } else {
-            this._cachedRenderingRegion.withOffset = ret2;
-            return ret2;
-          }
-        }
-        let ret = new Rectangle(0, 0, (this._renderTarget || this._canvas).width, (this._renderTarget || this._canvas).height);
-        this._cachedRenderingRegion.withoutOffset = this._cachedRenderingRegion.withOffset = ret;
-        return ret;
-      }
-      __resetCachedRenderingRegion() {
-        this._cachedRenderingRegion.withoutOffset = this._cachedRenderingRegion.withOffset = null;
       }
       getRenderingRegion(includeOffset) {
-        return this.__getRenderingRegionInternal(includeOffset).clone();
+        if (this._viewport) {
+          let ret = this._viewport.clone();
+          if (includeOffset === false) {
+            ret.x = ret.y = 0;
+          }
+          return ret;
+        }
+        return new Rectangle(0, 0, (this._renderTarget || this._canvas).width, (this._renderTarget || this._canvas).height);
       }
       getRenderingSize() {
-        let region = this.__getRenderingRegionInternal();
+        let region = this.getRenderingRegion();
         return region.getSize();
       }
       getCanvasSize() {
@@ -5647,15 +5502,8 @@ var require_gfx = __commonJS({
           if (!this._canvas) {
             this._canvas = document.createElement("canvas");
           }
-          this._gl = this._canvas.getContext("webgl2", this._initSettings);
-          this._webglVersion = 2;
+          this._gl = this._canvas.getContext("webgl2", this._initSettings) || this._canvas.getContext("webgl", this._initSettings);
           if (!this._gl) {
-            _logger.warn("Failed to init WebGL2, attempt fallback to WebGL1.");
-            this._gl = this._canvas.getContext("webgl", this._initSettings);
-            this._webglVersion = 1;
-          }
-          if (!this._gl) {
-            this._webglVersion = 0;
             _logger.error("Can't get WebGL context!");
             return reject2("Failed to get WebGL context from canvas!");
           }
@@ -5797,7 +5645,7 @@ var require_gfx = __commonJS({
         this.spritesBatch.draw(sprite);
       }
       cover(texture, destRect, sourceRect, color, blendMode) {
-        if (destRect instanceof Vector22 || destRect instanceof Vector3) {
+        if (destRect instanceof Vector22 || destRect instanceof Vector32) {
           destRect = new Rectangle(0, 0, destRect.x, destRect.y);
         }
         return this.draw(texture, destRect.getCenter(), destRect.getSize(), sourceRect, color, blendMode);
@@ -6005,7 +5853,7 @@ var require_gfx = __commonJS({
         canvas.style.position = "relative";
       }
       inScreen(shape) {
-        let region = this.__getRenderingRegionInternal();
+        let region = this.getRenderingRegion();
         if (shape instanceof Circle2) {
           return region.collideCircle(shape);
         } else if (shape instanceof Vector22) {
@@ -6127,9 +5975,6 @@ var require_gfx = __commonJS({
         this._gl.clearColor(color.r, color.g, color.b, color.a);
         this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
       }
-      clearDepth(value) {
-        this._gl.clearDepth(value !== void 0 ? value : 1);
-      }
       _setTextureFilter(filter) {
         if (!TextureFilterModes._values.has(filter)) {
           throw new Error("Invalid texture filter mode! Please pick a value from 'TextureFilterModes'.");
@@ -6243,7 +6088,6 @@ var require_gfx = __commonJS({
         this._lastBlendMode = null;
         this._drawCallsCount = 0;
         this._drawQuadsCount = 0;
-        this.__resetCachedRenderingRegion();
       }
       endFrame() {
         this.presentBufferedData();
@@ -6380,75 +6224,6 @@ var require_key_codes = __commonJS({
   }
 });
 
-// ../Shaku/lib/input/gamepad.js
-var require_gamepad = __commonJS({
-  "../Shaku/lib/input/gamepad.js"(exports, module) {
-    "use strict";
-    var Vector22 = require_vector2();
-    var Gamepad = class {
-      constructor(gp) {
-        this.id = gp.id;
-        this._buttonsDown = [];
-        for (let i = 0; i < gp.buttons.length; ++i) {
-          this._buttonsDown[i] = _gamepadButtonPressed(gp.buttons[i]);
-        }
-        this.axis1 = new Vector22(gp.axes[0], gp.axes[1]);
-        this.axis2 = new Vector22(gp.axes[2] || 0, gp.axes[3] || 0);
-        this.mapping = gp.mapping;
-        this.isMapped = false;
-        if (this.mapping === "standard") {
-          this.leftStick = this.axis1;
-          this.rightStick = this.axis2;
-          this.leftStickPressed = this._buttonsDown[10];
-          this.rightStickPressed = this._buttonsDown[11];
-          this.rightButtons = new FourButtonsCluster(this._buttonsDown[0], this._buttonsDown[1], this._buttonsDown[2], this._buttonsDown[3]);
-          this.leftButtons = new FourButtonsCluster(this._buttonsDown[13], this._buttonsDown[15], this._buttonsDown[14], this._buttonsDown[12]);
-          this.centerButtons = new ThreeButtonsCluster(this._buttonsDown[8], this._buttonsDown[9], this._buttonsDown[16]);
-          this.frontButtons = new FrontButtons(this._buttonsDown[4], this._buttonsDown[5], this._buttonsDown[6], this._buttonsDown[7]);
-          this.isMapped = true;
-        }
-        Object.freeze(this);
-      }
-      button(index) {
-        return this._buttonsDown[index];
-      }
-      get buttonsCount() {
-        return this._buttonsDown.length;
-      }
-    };
-    var FourButtonsCluster = class {
-      constructor(bottom, right, left, top) {
-        this.bottom = Boolean(bottom);
-        this.right = Boolean(right);
-        this.left = Boolean(left);
-        this.top = Boolean(top);
-      }
-    };
-    var ThreeButtonsCluster = class {
-      constructor(left, right, center) {
-        this.left = Boolean(left);
-        this.right = Boolean(right);
-        this.center = Boolean(center);
-      }
-    };
-    var FrontButtons = class {
-      constructor(topLeft, topRight, bottomLeft, bottomRight) {
-        this.topLeft = Boolean(topLeft);
-        this.topRight = Boolean(topRight);
-        this.bottomLeft = Boolean(bottomLeft);
-        this.bottomRight = Boolean(bottomRight);
-      }
-    };
-    function _gamepadButtonPressed(b) {
-      if (typeof b === "object") {
-        return b.pressed;
-      }
-      return b === 1;
-    }
-    module.exports = Gamepad;
-  }
-});
-
 // ../Shaku/lib/input/input.js
 var require_input = __commonJS({
   "../Shaku/lib/input/input.js"(exports, module) {
@@ -6456,34 +6231,19 @@ var require_input = __commonJS({
     var IManager = require_manager();
     var Vector22 = require_vector2();
     var { MouseButton, MouseButtons, KeyboardKey, KeyboardKeys } = require_key_codes();
-    var Gamepad = require_gamepad();
     var _logger = require_logger().getLogger("input");
-    function timestamp() {
-      return new Date().getTime();
-    }
-    var _touchKeyCode = "touch";
     var Input = class extends IManager {
       constructor() {
         super();
         this._callbacks = null;
         this._targetElement = window;
+        this.MouseButtons = MouseButtons;
+        this.KeyboardKeys = KeyboardKeys;
         this.preventDefaults = false;
         this.enableMouseDeltaWhileMouseWheelDown = true;
         this.disableContextMenu = true;
-        this.delegateTouchInputToMouse = true;
-        this.delegateGamepadInputToKeys = true;
         this.resetOnFocusLoss = true;
-        this.defaultDoublePressInterval = 250;
         this._resetAll();
-      }
-      get MouseButtons() {
-        return MouseButtons;
-      }
-      get KeyboardKeys() {
-        return KeyboardKeys;
-      }
-      get TouchKeyCode() {
-        return _touchKeyCode;
       }
       setup() {
         return new Promise((resolve, reject2) => {
@@ -6533,8 +6293,6 @@ var require_input = __commonJS({
             },
             "wheel": function(event2) {
               _this._onMouseWheel(event2);
-              if (this.preventDefaults)
-                event2.preventDefault();
             },
             "touchstart": function(event2) {
               _this._onTouchStart(event2);
@@ -6542,7 +6300,7 @@ var require_input = __commonJS({
                 event2.preventDefault();
             },
             "touchend": function(event2) {
-              _this._onTouchEnd(event2);
+              _this._onMouseUp(event2);
               if (this.preventDefaults)
                 event2.preventDefault();
             },
@@ -6565,85 +6323,10 @@ var require_input = __commonJS({
             window.addEventListener("mouseup", this._callbacks["mouseup"], false);
             window.addEventListener("touchend", this._callbacks["touchend"], false);
           }
-          this._customKeys = /* @__PURE__ */ new Set();
           resolve();
         });
       }
       startFrame() {
-        const prevGamepadData = this._gamepadsData || [];
-        const prevDefaultGamepadId = (this._defaultGamepad || { id: "null" }).id;
-        this._gamepadsData = navigator.getGamepads();
-        this._defaultGamepad = null;
-        let i = 0;
-        for (let gp of this._gamepadsData) {
-          let newId = (gp || { id: "null" }).id;
-          let prevId = (prevGamepadData[i] || { id: "null" }).id;
-          if (newId !== prevId) {
-            if (newId !== "null") {
-              _logger.info(`Gamepad ${i} connected: ${newId}.`);
-            } else if (newId === "null") {
-              _logger.info(`Gamepad ${i} disconnected: ${prevId}.`);
-            }
-          }
-          if (gp && !this._defaultGamepad) {
-            this._defaultGamepad = gp;
-            this._defaultGamepadIndex = i;
-          }
-          i++;
-        }
-        const newDefaultGamepadId = (this._defaultGamepad || { id: "null" }).id;
-        if (newDefaultGamepadId !== prevDefaultGamepadId) {
-          _logger.info(`Default gamepad changed from '${prevDefaultGamepadId}' to '${newDefaultGamepadId}'.`);
-        }
-        this._queriedGamepadStates = {};
-        if (this.delegateGamepadInputToKeys) {
-          for (let i2 = 0; i2 < 4; ++i2) {
-            const gp = this.gamepad(i2);
-            if (!gp || !gp.isMapped) {
-              this.setCustomState(`gamepad${i2}_top`, false);
-              this.setCustomState(`gamepad${i2}_bottom`, false);
-              this.setCustomState(`gamepad${i2}_left`, false);
-              this.setCustomState(`gamepad${i2}_right`, false);
-              this.setCustomState(`gamepad${i2}_y`, false);
-              this.setCustomState(`gamepad${i2}_a`, false);
-              this.setCustomState(`gamepad${i2}_x`, false);
-              this.setCustomState(`gamepad${i2}_b`, false);
-              this.setCustomState(`gamepad${i2}_frontTopLeft`, false);
-              this.setCustomState(`gamepad${i2}_frontTopRight`, false);
-              this.setCustomState(`gamepad${i2}_frontBottomLeft`, false);
-              this.setCustomState(`gamepad${i2}_frontBottomRight`, false);
-              this.setCustomState(`gamepad${i2}_leftStickUp`, false);
-              this.setCustomState(`gamepad${i2}_leftStickDown`, false);
-              this.setCustomState(`gamepad${i2}_leftStickLeft`, false);
-              this.setCustomState(`gamepad${i2}_leftStickRight`, false);
-              this.setCustomState(`gamepad${i2}_rightStickUp`, false);
-              this.setCustomState(`gamepad${i2}_rightStickDown`, false);
-              this.setCustomState(`gamepad${i2}_rightStickLeft`, false);
-              this.setCustomState(`gamepad${i2}_rightStickRight`, false);
-              continue;
-            }
-            this.setCustomState(`gamepad${i2}_top`, gp.leftButtons.top);
-            this.setCustomState(`gamepad${i2}_bottom`, gp.leftButtons.bottom);
-            this.setCustomState(`gamepad${i2}_left`, gp.leftButtons.left);
-            this.setCustomState(`gamepad${i2}_right`, gp.leftButtons.right);
-            this.setCustomState(`gamepad${i2}_y`, gp.rightButtons.top);
-            this.setCustomState(`gamepad${i2}_a`, gp.rightButtons.bottom);
-            this.setCustomState(`gamepad${i2}_x`, gp.rightButtons.left);
-            this.setCustomState(`gamepad${i2}_b`, gp.rightButtons.right);
-            this.setCustomState(`gamepad${i2}_frontTopLeft`, gp.frontButtons.topLeft);
-            this.setCustomState(`gamepad${i2}_frontTopRight`, gp.frontButtons.topRight);
-            this.setCustomState(`gamepad${i2}_frontBottomLeft`, gp.frontButtons.bottomLeft);
-            this.setCustomState(`gamepad${i2}_frontBottomRight`, gp.frontButtons.bottomRight);
-            this.setCustomState(`gamepad${i2}_leftStickUp`, gp.leftStick.y < -0.8);
-            this.setCustomState(`gamepad${i2}_leftStickDown`, gp.leftStick.y > 0.8);
-            this.setCustomState(`gamepad${i2}_leftStickLeft`, gp.leftStick.x < -0.8);
-            this.setCustomState(`gamepad${i2}_leftStickRight`, gp.leftStick.x > 0.8);
-            this.setCustomState(`gamepad${i2}_rightStickUp`, gp.rightStick.y < -0.8);
-            this.setCustomState(`gamepad${i2}_rightStickDown`, gp.rightStick.y > 0.8);
-            this.setCustomState(`gamepad${i2}_rightStickLeft`, gp.rightStick.x < -0.8);
-            this.setCustomState(`gamepad${i2}_rightStickRight`, gp.rightStick.x > 0.8);
-          }
-        }
       }
       destroy() {
         if (this._callbacks) {
@@ -6668,107 +6351,11 @@ var require_input = __commonJS({
         this._mousePos = new Vector22();
         this._mousePrevPos = new Vector22();
         this._mouseState = {};
+        this._mousePrevState = {};
         this._mouseWheel = 0;
-        this._touchPosition = new Vector22();
-        this._isTouching = false;
-        this._touchStarted = false;
-        this._touchEnded = false;
         this._keyboardState = {};
         this._keyboardPrevState = {};
-        this._keyboardPressed = {};
-        this._keyboardReleased = {};
-        this._mousePressed = {};
-        this._mouseReleased = {};
-        this._customStates = {};
-        this._customPressed = {};
-        this._customReleased = {};
-        this._lastCustomReleasedTime = {};
-        this._lastCustomPressedTime = {};
-        this._prevLastCustomReleasedTime = {};
-        this._prevLastCustomPressedTime = {};
-        this._lastMouseReleasedTime = {};
-        this._lastKeyReleasedTime = {};
-        this._lastTouchReleasedTime = 0;
-        this._lastMousePressedTime = {};
-        this._lastKeyPressedTime = {};
-        this._lastTouchPressedTime = 0;
-        this._prevLastMouseReleasedTime = {};
-        this._prevLastKeyReleasedTime = {};
-        this._prevLastTouchReleasedTime = 0;
-        this._prevLastMousePressedTime = {};
-        this._prevLastKeyPressedTime = {};
-        this._prevLastTouchPressedTime = 0;
-        this._defaultGamepad = null;
-        this._gamepadsData = [];
-        this._queriedGamepadStates = {};
-      }
-      gamepad(index) {
-        if (index === null || index === void 0) {
-          index = this._defaultGamepadIndex;
-        }
-        let cached = this._queriedGamepadStates[index];
-        if (!cached) {
-          const gp = this._gamepadsData[index];
-          if (!gp) {
-            return null;
-          }
-          this._queriedGamepadStates[index] = cached = new Gamepad(gp);
-        }
-        return cached;
-      }
-      gamepadId(index) {
-        return this.gamepadIds()[index || 0] || null;
-      }
-      gamepadIds() {
-        let ret = [];
-        for (let gp of this._gamepadsData) {
-          if (gp) {
-            ret.push(gp.id);
-          }
-        }
-        return ret;
-      }
-      get touchPosition() {
-        return this._touchPosition.clone();
-      }
-      get touching() {
-        return this._isTouching;
-      }
-      get touchStarted() {
-        return this._touchStarted;
-      }
-      get touchEnded() {
-        return this._touchEnded;
-      }
-      setCustomState(code, value) {
-        if (value === null) {
-          this._customKeys.delete(code);
-          delete this._customPressed[code];
-          delete this._customReleased[code];
-          delete this._customStates[code];
-          return;
-        } else {
-          this._customKeys.add(code);
-        }
-        value = Boolean(value);
-        const prev = Boolean(this._customStates[code]);
-        this._customStates[code] = value;
-        if (this._customPressed[code] === void 0) {
-          this._customPressed[code] = false;
-        }
-        if (this._customReleased[code] === void 0) {
-          this._customReleased[code] = false;
-        }
-        if (!prev && value) {
-          this._customPressed[code] = true;
-          this._prevLastCustomPressedTime[code] = this._lastCustomPressedTime[code];
-          this._lastCustomPressedTime[code] = timestamp();
-        }
-        if (prev && !value) {
-          this._customReleased[code] = true;
-          this._prevLastCustomReleasedTime[code] = this._lastCustomReleasedTime[code];
-          this._lastCustomReleasedTime[code] = timestamp();
-        }
+        this._touchStarted = false;
       }
       get mousePosition() {
         return this._mousePos.clone();
@@ -6788,7 +6375,7 @@ var require_input = __commonJS({
       mousePressed(button = 0) {
         if (button === void 0)
           throw new Error("Invalid button code!");
-        return Boolean(this._mousePressed[button]);
+        return Boolean(this._mouseState[button] && !this._mousePrevState[button]);
       }
       mouseDown(button = 0) {
         if (button === void 0)
@@ -6803,7 +6390,7 @@ var require_input = __commonJS({
       mouseReleased(button = 0) {
         if (button === void 0)
           throw new Error("Invalid button code!");
-        return Boolean(this._mouseReleased[button]);
+        return Boolean(!this._mouseState[button] && this._mousePrevState[button]);
       }
       keyDown(key) {
         if (key === void 0)
@@ -6818,12 +6405,12 @@ var require_input = __commonJS({
       keyReleased(key) {
         if (key === void 0)
           throw new Error("Invalid key code!");
-        return Boolean(this._keyboardReleased[key]);
+        return Boolean(!this._keyboardState[key] && this._keyboardPrevState[key]);
       }
       keyPressed(key) {
         if (key === void 0)
           throw new Error("Invalid key code!");
-        return Boolean(this._keyboardPressed[key]);
+        return Boolean(this._keyboardState[key] && !this._keyboardPrevState[key]);
       }
       get shiftDown() {
         return Boolean(this.keyDown(this.KeyboardKeys.shift));
@@ -6835,7 +6422,12 @@ var require_input = __commonJS({
         return Boolean(this.keyDown(this.KeyboardKeys.alt));
       }
       get anyKeyPressed() {
-        return Object.keys(this._keyboardPressed).length !== 0;
+        for (var key in this._keyboardState) {
+          if (this._keyboardState[key] && !this._keyboardPrevState[key]) {
+            return true;
+          }
+        }
+        return false;
       }
       get anyKeyDown() {
         for (var key in this._keyboardState) {
@@ -6846,7 +6438,12 @@ var require_input = __commonJS({
         return false;
       }
       get anyMouseButtonPressed() {
-        return Object.keys(this._mousePressed).length !== 0;
+        for (var key in this._mouseState) {
+          if (this._mouseState[key] && !this._mousePrevState[key]) {
+            return true;
+          }
+        }
+        return false;
       }
       get anyMouseButtonDown() {
         for (var key in this._mouseState) {
@@ -6856,32 +6453,14 @@ var require_input = __commonJS({
         }
         return false;
       }
-      _getValueWithCode(code, mouseCheck, keyboardCheck, touchValue, customValues) {
+      _getValueWithCode(code, mouseCheck, keyboardCheck) {
         code = String(code);
-        const customVal = customValues[code];
-        if (customVal !== void 0) {
-          return customVal;
-        }
-        if (this._customKeys.has(code)) {
-          return false;
-        }
-        if (code === _touchKeyCode) {
-          return touchValue;
-        }
         if (code.indexOf("mouse_") === 0) {
-          const codename = code.split("_")[1];
-          const mouseKey = this.MouseButtons[codename];
-          if (mouseKey === void 0) {
-            throw new Error("Unknown mouse button: " + code);
-          }
-          return mouseCheck.call(this, mouseKey);
+          var codename = code.split("_")[1];
+          return mouseCheck.call(this, this.MouseButtons[codename]);
         }
         if (!isNaN(parseInt(code)) && code.length === 1) {
           code = "n" + code;
-        }
-        const keyboardKey = this.KeyboardKeys[code];
-        if (keyboardKey === void 0) {
-          throw new Error("Unknown keyboard key: " + code);
         }
         return keyboardCheck.call(this, this.KeyboardKeys[code]);
       }
@@ -6890,7 +6469,7 @@ var require_input = __commonJS({
           code = [code];
         }
         for (let c of code) {
-          if (Boolean(this._getValueWithCode(c, this.mouseDown, this.keyDown, this.touching, this._customStates))) {
+          if (Boolean(this._getValueWithCode(c, this.mouseDown, this.keyDown))) {
             return true;
           }
         }
@@ -6901,7 +6480,7 @@ var require_input = __commonJS({
           code = [code];
         }
         for (let c of code) {
-          if (Boolean(this._getValueWithCode(c, this.mouseReleased, this.keyReleased, this.touchEnded, this._customReleased))) {
+          if (Boolean(this._getValueWithCode(c, this.mouseReleased, this.keyReleased))) {
             return true;
           }
         }
@@ -6912,52 +6491,8 @@ var require_input = __commonJS({
           code = [code];
         }
         for (let c of code) {
-          if (Boolean(this._getValueWithCode(c, this.mousePressed, this.keyPressed, this.touchStarted, this._customPressed))) {
+          if (Boolean(this._getValueWithCode(c, this.mousePressed, this.keyPressed))) {
             return true;
-          }
-        }
-        return false;
-      }
-      lastReleaseTime(code) {
-        if (code instanceof Array) {
-          throw new Error("Array not supported in 'lastReleaseTime'!");
-        }
-        return this._getValueWithCode(code, (c) => this._lastMouseReleasedTime[c], (c) => this._lastKeyReleasedTime[c], this._lastTouchReleasedTime, this._prevLastCustomReleasedTime) || 0;
-      }
-      lastPressTime(code) {
-        if (code instanceof Array) {
-          throw new Error("Array not supported in 'lastPressTime'!");
-        }
-        return this._getValueWithCode(code, (c) => this._lastMousePressedTime[c], (c) => this._lastKeyPressedTime[c], this._lastTouchPressedTime, this._prevLastCustomPressedTime) || 0;
-      }
-      doublePressed(code, maxInterval) {
-        maxInterval = maxInterval || this.defaultDoublePressInterval;
-        let currTime = timestamp();
-        if (!(code instanceof Array)) {
-          code = [code];
-        }
-        for (let c of code) {
-          if (this.pressed(c)) {
-            let currKeyTime = this._getValueWithCode(c, (c2) => this._prevLastMousePressedTime[c2], (c2) => this._prevLastKeyPressedTime[c2], this._prevLastTouchPressedTime, this._prevLastCustomPressedTime);
-            if (currTime - currKeyTime <= maxInterval) {
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-      doubleReleased(code, maxInterval) {
-        maxInterval = maxInterval || this.defaultDoublePressInterval;
-        let currTime = timestamp();
-        if (!(code instanceof Array)) {
-          code = [code];
-        }
-        for (let c of code) {
-          if (this.released(c)) {
-            let currKeyTime = this._getValueWithCode(c, (c2) => this._prevLastMousePressedTime[c2], (c2) => this._prevLastKeyPressedTime[c2], this._prevLastTouchPressedTime, this._prevLastCustomPressedTime);
-            if (currTime - currKeyTime <= maxInterval) {
-              return true;
-            }
           }
         }
         return false;
@@ -6970,14 +6505,18 @@ var require_input = __commonJS({
       }
       endFrame() {
         this._mousePrevPos = this._mousePos.clone();
-        this._keyboardPressed = {};
-        this._keyboardReleased = {};
-        this._mousePressed = {};
-        this._mouseReleased = {};
-        this._customPressed = {};
-        this._customReleased = {};
-        this._touchStarted = false;
-        this._touchEnded = false;
+        this._keyboardPrevState = {};
+        for (var key in this._keyboardState) {
+          this._keyboardPrevState[key] = this._keyboardState[key];
+        }
+        this._mousePrevState = {};
+        for (var key in this._mouseState) {
+          this._mousePrevState[key] = this._mouseState[key];
+        }
+        if (this._touchStarted) {
+          this._mouseState[this.MouseButtons.left] = true;
+          this._touchStarted = false;
+        }
         this._mouseWheel = 0;
       }
       _getKeyboardKeyCode(event) {
@@ -6994,99 +6533,42 @@ var require_input = __commonJS({
       }
       _onKeyDown(event) {
         var keycode = this._getKeyboardKeyCode(event);
-        if (!this._keyboardState[keycode]) {
-          this._keyboardPressed[keycode] = true;
-          this._prevLastKeyPressedTime[keycode] = this._lastKeyPressedTime[keycode];
-          this._lastKeyPressedTime[keycode] = timestamp();
-        }
         this._keyboardState[keycode] = true;
       }
       _onKeyUp(event) {
-        var keycode = this._getKeyboardKeyCode(event) || 0;
-        this._keyboardState[keycode] = false;
-        this._keyboardReleased[keycode] = true;
-        this._prevLastKeyReleasedTime[keycode] = this._lastKeyReleasedTime[keycode];
-        this._lastKeyReleasedTime[keycode] = timestamp();
+        var keycode = this._getKeyboardKeyCode(event);
+        this._keyboardState[keycode || 0] = false;
       }
-      _getTouchEventPosition(event) {
-        var touches = event.changedTouches || event.touches;
+      _onTouchStart(event) {
+        var touches = event.changedTouches;
         if (touches && touches.length) {
           var touch = touches[0];
           var x = touch.pageX || touch.offsetX || touch.clientX;
           var y = touch.pageY || touch.offsetY || touch.clientY;
-          return new Vector22(x, y);
-        }
-        return null;
-      }
-      _onTouchStart(event) {
-        let position = this._getTouchEventPosition(event);
-        if (position) {
-          if (this.delegateTouchInputToMouse) {
-            this._mousePos.x = position.x;
-            this._mousePos.y = position.y;
+          if (x !== void 0 && y !== void 0) {
+            this._mousePos.x = x;
+            this._mousePos.y = y;
             this._normalizeMousePos();
           }
         }
-        this._isTouching = true;
         this._touchStarted = true;
-        this._prevLastTouchPressedTime = this._lastTouchPressedTime;
-        this._lastTouchPressedTime = timestamp();
-        if (this.delegateTouchInputToMouse) {
-          this._mouseButtonDown(this.MouseButtons.left);
-        }
-      }
-      _onTouchEnd(event) {
-        let position = this._getTouchEventPosition(event);
-        if (position) {
-          this._touchPosition.copy(position);
-          if (this.delegateTouchInputToMouse) {
-            this._mousePos.x = position.x;
-            this._mousePos.y = position.y;
-            this._normalizeMousePos();
-          }
-        }
-        this._isTouching = false;
-        this._touchEnded = true;
-        this._prevLastTouchReleasedTime = this._lastTouchReleasedTime;
-        this._lastTouchReleasedTime = timestamp();
-        if (this.delegateTouchInputToMouse) {
-          this._mouseButtonUp(this.MouseButtons.left);
-        }
-      }
-      _onTouchMove(event) {
-        let position = this._getTouchEventPosition(event);
-        if (position) {
-          this._touchPosition.copy(position);
-          if (this.delegateTouchInputToMouse) {
-            this._mousePos.x = position.x;
-            this._mousePos.y = position.y;
-            this._normalizeMousePos();
-          }
-        }
-        this._isTouching = true;
       }
       _onMouseDown(event) {
         event = this._getEvent(event);
         if (this.enableMouseDeltaWhileMouseWheelDown && event.button === this.MouseButtons.middle) {
           event.preventDefault();
         }
-        this._mouseButtonDown(event.button);
+        this._mouseState[event.button || 0] = true;
       }
       _onMouseUp(event) {
         event = this._getEvent(event);
-        this._mouseButtonUp(event.button);
+        this._mouseState[event.button || 0] = false;
       }
-      _mouseButtonDown(button) {
-        this._mouseState[button] = true;
-        this._mousePressed[button] = true;
-        this._prevLastMousePressedTime[button] = this._lastMousePressedTime[button];
-        this._lastMousePressedTime[button] = timestamp();
-      }
-      _mouseButtonUp(button) {
-        this._mouseState[button] = false;
-        this._mouseReleased[button] = true;
-        this._prevLastMouseReleasedTime[button] = this._lastMouseReleasedTime[button];
-        this._lastMouseReleasedTime[button] = timestamp();
+      _onTouchMove(event) {
+        event = this._getEvent(event);
+        this._mousePos.x = event.touches[0].pageX;
+        this._mousePos.y = event.touches[0].pageY;
+        this._normalizeMousePos();
       }
       _onMouseMove(event) {
         event = this._getEvent(event);
@@ -7129,7 +6611,6 @@ var require_input = __commonJS({
           this._mousePos.x -= rect.left;
           this._mousePos.y -= rect.top;
         }
-        this._mousePos.roundSelf();
       }
       _getEvent(event) {
         return event || window.event;
@@ -7700,27 +7181,9 @@ var require_collision_world = __commonJS({
         this._grid = {};
         this._shapesToUpdate = /* @__PURE__ */ new Set();
         this._cellsToDelete = /* @__PURE__ */ new Set();
-        this.resetStats();
-      }
-      resetStats() {
-        this._stats = {
-          updatedShapes: 0,
-          addedShapes: 0,
-          deletedGridCells: 0,
-          createdGridCell: 0,
-          broadPhaseShapesChecksPrePredicate: 0,
-          broadPhaseShapesChecksPostPredicate: 0,
-          broadPhaseCalls: 0,
-          collisionChecks: 0,
-          collisionMatches: 0
-        };
-      }
-      get stats() {
-        return this._stats;
       }
       _performUpdates() {
         if (this._cellsToDelete.size > 0) {
-          this._stats.deletedGridCells += this._cellsToDelete.size;
           for (let key of this._cellsToDelete) {
             if (this._grid[key] && this._grid[key].size === 0) {
               delete this._grid[key];
@@ -7735,20 +7198,10 @@ var require_collision_world = __commonJS({
           this._shapesToUpdate.clear();
         }
       }
-      _getCell(i, j) {
-        let key = i + "," + j;
-        let ret = this._grid[key];
-        if (!ret) {
-          this._stats.createdGridCells++;
-          this._grid[key] = ret = /* @__PURE__ */ new Set();
-        }
-        return ret;
-      }
       _updateShape(shape) {
         if (shape._world !== this) {
           return;
         }
-        this._stats.updatedShapes++;
         let bb = shape._getBoundingBox();
         let minx = Math.floor(bb.left / this._gridCellSize.x);
         let miny = Math.floor(bb.top / this._gridCellSize.y);
@@ -7782,15 +7235,22 @@ var require_collision_world = __commonJS({
               if (i >= ominx && i < omaxx && j >= ominy && j < omaxy) {
                 continue;
               }
-              let currSet = this._getCell(i, j);
+              let key = i + "," + j;
+              let currSet = this._grid[key];
+              if (!currSet) {
+                this._grid[key] = currSet = /* @__PURE__ */ new Set();
+              }
               currSet.add(shape);
             }
           }
         } else {
-          this._stats.addedShapes++;
           for (let i = minx; i < maxx; ++i) {
             for (let j = miny; j < maxy; ++j) {
-              let currSet = this._getCell(i, j);
+              let key = i + "," + j;
+              let currSet = this._grid[key];
+              if (!currSet) {
+                this._grid[key] = currSet = /* @__PURE__ */ new Set();
+              }
               currSet.add(shape);
             }
           }
@@ -7850,7 +7310,6 @@ var require_collision_world = __commonJS({
         let miny = Math.floor(bb.top / this._gridCellSize.y);
         let maxx = Math.ceil(bb.right / this._gridCellSize.x);
         let maxy = Math.ceil(bb.bottom / this._gridCellSize.y);
-        this._stats.broadPhaseCalls++;
         let checked = /* @__PURE__ */ new Set();
         for (let i = minx; i < maxx; ++i) {
           for (let j = miny; j < maxy; ++j) {
@@ -7868,11 +7327,9 @@ var require_collision_world = __commonJS({
                 if (other === shape) {
                   continue;
                 }
-                this._stats.broadPhaseShapesChecksPrePredicate++;
                 if (predicate && !predicate(other)) {
                   continue;
                 }
-                this._stats.broadPhaseShapesChecksPostPredicate++;
                 let proceedLoop = Boolean(handler(other));
                 if (!proceedLoop) {
                   return;
@@ -7894,21 +7351,15 @@ var require_collision_world = __commonJS({
           sortByDistanceShapes(sourceShape, options);
           var handlers = this.resolver.getHandlers(sourceShape);
           for (let other of options) {
-            this._stats.collisionChecks++;
             result2 = this.resolver.testWithHandler(sourceShape, other, handlers[other.shapeId]);
             if (result2) {
-              this._stats.collisionMatches++;
               break;
             }
           }
         } else {
           var handlers = this.resolver.getHandlers(sourceShape);
           this._iterateBroadPhase(sourceShape, (other) => {
-            this._stats.collisionChecks++;
             result2 = this.resolver.testWithHandler(sourceShape, other, handlers[other.shapeId]);
-            if (result2) {
-              this._stats.collisionMatches++;
-            }
             return !result2;
           }, mask, predicate);
         }
@@ -7919,10 +7370,8 @@ var require_collision_world = __commonJS({
         var ret = [];
         var handlers = this.resolver.getHandlers(sourceShape);
         this._iterateBroadPhase(sourceShape, (other) => {
-          this._stats.collisionChecks++;
           let result2 = this.resolver.testWithHandler(sourceShape, other, handlers[other.shapeId]);
           if (result2) {
-            this._stats.collisionMatches++;
             ret.push(result2);
             if (intermediateProcessor && intermediateProcessor(result2) === false) {
               return false;
@@ -7956,7 +7405,7 @@ var require_collision_world = __commonJS({
         gridColor.a *= opacity;
         gridHighlitColor.a *= opacity;
         let renderedShapes = /* @__PURE__ */ new Set();
-        let bb = camera ? camera.getRegion() : gfx2.__getRenderingRegionInternal(false);
+        let bb = camera ? camera.getRegion() : gfx2.getRenderingRegion(false);
         let minx = Math.floor(bb.left / this._gridCellSize.x);
         let miny = Math.floor(bb.top / this._gridCellSize.y);
         let maxx = minx + Math.ceil(bb.width / this._gridCellSize.x);
@@ -8405,7 +7854,7 @@ var require_shaku = __commonJS({
     var _startFrameTime = 0;
     var _frameTimeMeasuresCount = 0;
     var _totalFrameTimes = 0;
-    var version = "1.7.0";
+    var version = "1.6.1";
     var Shaku2 = class {
       constructor() {
         this.utils = utils;
@@ -11365,11 +10814,12 @@ var Gimmick = class {
       grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner))
     ], ropeColor);
     if (player.holding === this && player.holding_side === 1) {
+      let player_hand = player.frame.clone().move(1, 0.15);
       import_shaku2.gfx.drawLinesStrip([
         grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
-        grid.frame2screen(player.frame)
+        grid.frame2screen(player_hand)
       ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player.frame), CONFIG.tile_size * 0.1), ropeColor);
+      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player_hand), CONFIG.tile_size * 0.1), ropeColor);
     } else {
       import_shaku2.gfx.drawLinesStrip([
         grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
@@ -11378,11 +10828,12 @@ var Gimmick = class {
       import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(new Frame(this.peg1.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.1), ropeColor);
     }
     if (player.holding === this && player.holding_side === 2) {
+      let player_hand = player.frame.clone().move(1, 0.15);
       import_shaku2.gfx.drawLinesStrip([
         grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner)),
-        grid.frame2screen(player.frame)
+        grid.frame2screen(player_hand)
       ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player.frame), CONFIG.tile_size * 0.1), ropeColor);
+      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player_hand), CONFIG.tile_size * 0.1), ropeColor);
     } else {
       import_shaku2.gfx.drawLinesStrip([
         grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner)),
@@ -11402,10 +10853,10 @@ var Player = class {
   holding_side;
   draw() {
     import_shaku2.gfx.drawLinesStrip([
-      grid.frame2screen(this.frame.clone().move(1, -0.4)),
-      grid.frame2screen(this.frame.clone().move(0, 0.2).move(1, 0.4)),
-      grid.frame2screen(this.frame.clone().move(0, -0.2).move(1, 0.4)),
-      grid.frame2screen(this.frame.clone().move(1, -0.4))
+      grid.frame2screen(this.frame.clone().move(1, -0.3)),
+      grid.frame2screen(this.frame.clone().move(0, 0.2).move(1, 0.48)),
+      grid.frame2screen(this.frame.clone().move(0, -0.2).move(1, 0.48)),
+      grid.frame2screen(this.frame.clone().move(1, -0.3))
     ], import_color.default.magenta);
   }
 };
@@ -11416,7 +10867,10 @@ var Peg = class {
   }
   used;
   draw() {
-    import_shaku.default.gfx.outlineCircle(new import_circle.default(grid.frame2screen(new Frame(this.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.13), import_color.default.black);
+    import_shaku.default.gfx.outlineCircle(
+      new import_circle.default(grid.frame2screen(new Frame(this.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.13),
+      this.used ? ropeColor : import_color.default.black
+    );
   }
 };
 var Stairs = class {
@@ -11448,10 +10902,10 @@ var Target = class {
   draw() {
     let frame = new Frame(this.tile, import_vector2.default.half, this.direction);
     import_shaku2.gfx.drawLinesStrip([
-      grid.frame2screen(frame.clone().move(0, -0.25).move(1, -0.5)),
-      grid.frame2screen(frame.clone().move(0, -0.25).move(1, 0.25)),
-      grid.frame2screen(frame.clone().move(0, 0.25).move(1, 0.25)),
-      grid.frame2screen(frame.clone().move(0, 0.25).move(1, -0.5))
+      grid.frame2screen(frame.clone().move(0, -0.25).move(1, 0.5)),
+      grid.frame2screen(frame.clone().move(0, -0.25).move(3, 0.25)),
+      grid.frame2screen(frame.clone().move(0, 0.25).move(3, 0.25)),
+      grid.frame2screen(frame.clone().move(0, 0.25).move(1, 0.5))
     ], import_color.default.magenta);
   }
 };
@@ -11476,7 +10930,7 @@ grid.tiles[3][6].wall = true;
 grid.tiles[5][4].wall = true;
 grid.tiles[5][6].wall = true;
 grid.tiles[5][7].wall = true;
-var target = new Target(grid.tiles[2][3], 3);
+var target = new Target(grid.tiles[2][3], 1);
 var pegs = [
   new Peg(grid.tiles[4][4]),
   new Peg(grid.tiles[3][3]),
@@ -11513,6 +10967,7 @@ function stopHolding() {
   player.holding = null;
   player.holding_side = null;
 }
+var won = false;
 function step() {
   import_shaku.default.startFrame();
   import_shaku.default.gfx.clear(import_color.default.steelblue);
@@ -11655,6 +11110,12 @@ function step() {
       }
     }
   }
+  if (!won && player.frame.tile === target.tile && player.frame.dir === target.direction) {
+    console.log(player.frame.dir, target.direction);
+    console.log(player.frame.dir === target.direction);
+    document.getElementById("won").style.display = "block";
+    won = true;
+  }
   grid.update(import_shaku.default.gameTime.delta);
   gimmicks.forEach((x) => {
     grid.almostForceDistanceBetweenCorners(
@@ -11778,18 +11239,6 @@ step();
  * 
  */
 /**
- * Define a gamepad object.
- * 
- * |-- copyright and license --|
- * @package    Shaku
- * @file       shaku\lib\input\gamepad.js
- * @author     Ronen Ness (ronenness@gmail.com | http://ronenness.com)
- * @copyright  (c) 2021 Ronen Ness
- * @license    MIT
- * |-- end copyright and license --|
- * 
- */
-/**
  * Define a mesh object.
  * 
  * |-- copyright and license --|
@@ -11842,7 +11291,7 @@ step();
  * 
  * |-- copyright and license --|
  * @package    Shaku
- * @file       shaku\lib\gfx\text_alignments.js
+ * @file       shaku\lib\gfx\text_alignment.js
  * @author     Ronen Ness (ronenness@gmail.com | http://ronenness.com)
  * @copyright  (c) 2021 Ronen Ness
  * @license    MIT

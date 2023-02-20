@@ -143,12 +143,6 @@ class Grid {
                 }
             }
         }
-
-        /*for (let j = 1; j < this.h - 1; j++) {
-            for (let i = 1; i < this.w - 1; i++) {
-                this.tiles[j][i].drawBackground();
-            }
-        }*/
     }
 
     update(dt: number) {
@@ -173,30 +167,6 @@ class Grid {
                 corner.update(dt);
             }
         }
-
-        // this.almostForceDistanceBetweenCorners(this.corners[3][3], this.corners[3 + 1][3 + 1], (1 - .95) * Math.SQRT2 * CONFIG.tile_size);
-        // this.almostForceDistanceBetweenCorners(this.corners[3 + 1][3], this.corners[3][3 + 1], Math.SQRT2 * CONFIG.tile_size * (.95 * .3 + 1));
-
-        /*
-        if (THINGY > 0) {
-            this.forceDistanceBetweenCorners(this.corners[SJ][SI], this.corners[SJ + 1][SI + 1], (1 - THINGY) * Math.SQRT2 * TILE_SIZE);
-            this.forceDistanceBetweenCorners(this.corners[SJ + 1][SI], this.corners[SJ][SI + 1], Math.SQRT2 * TILE_SIZE * (THINGY * .3 + 1));
-        }
-        if (THINGY < 0) {
-            this.forceDistanceBetweenCorners(this.corners[SJ + 1][SI], this.corners[SJ][SI + 1], (1 + THINGY) * Math.SQRT2 * TILE_SIZE);
-            this.forceDistanceBetweenCorners(this.corners[SJ][SI], this.corners[SJ + 1][SI + 1], Math.SQRT2 * TILE_SIZE * (-THINGY * .3 + 1));
-        }
-        if (THINGY === 0) {
-            this.forceDistanceBetweenCorners(this.corners[SJ + 1][SI], this.corners[SJ][SI + 1], Math.SQRT2 * TILE_SIZE);
-            this.forceDistanceBetweenCorners(this.corners[SJ][SI], this.corners[SJ + 1][SI + 1], Math.SQRT2 * TILE_SIZE);
-        }
-        */
-
-        /*for (let j = 1; j < this.h - 1; j++) {
-            for (let i = 1; i < this.w - 1; i++) {
-                this.tiles[j][i].updateSprites();
-            }
-        }*/
     }
 
     almostForceDistanceBetweenCorners(c1: Corner, c2: Corner, target_dist: number, relative_error: number = .05) {
@@ -323,42 +293,12 @@ class Corner {
 }
 
 class Tile {
-    // public sprites: Sprite[][];
-    // public verts: Vector2[][];
     constructor(
         public i: number,
         public j: number,
         // Game logic
         public wall: boolean,
-    ) {
-        /*this.verts = makeRectArrayFromFunction<Vector2>(RESOLUTION + 1, RESOLUTION + 1, (i, j) => {
-            return Vector2.zero;
-        });
-
-        this.sprites = makeRectArrayFromFunction<Sprite>(RESOLUTION, RESOLUTION, (i, j) => {
-            let sprite = new Sprite(cars_texture);
-            sprite.static = true;
-            let uv_top_left = new Vector2(i / RESOLUTION, j / RESOLUTION);
-            let uv_bottom_right = new Vector2((i + 1) / RESOLUTION, (j + 1) / RESOLUTION);
-            sprite._cachedVertices = [
-                // @ts-ignore
-                new Vertex(this.verts[j][i], uv_top_left), // topLeft
-                // @ts-ignore
-                new Vertex(this.verts[j][i + 1]), // topRight
-                // @ts-ignore
-                new Vertex(this.verts[j + 1][i]), // bottomLeft
-                // @ts-ignore
-                new Vertex(this.verts[j + 1][i + 1], uv_bottom_right), // bottomRight
-            ];
-            sprite.color = [
-                new Color(1, 0, 0, 1), // topLeft
-                new Color(1, 0, 0, 1), // topRight
-                new Color(1, 0, 0, 1), // bottomLeft
-                new Color(1, 0, 0, 1), // bottomRight
-            ]
-            return sprite;
-        });*/
-    }
+    ) { }
 
     adjacent(dir: direction, ignore_gimmmicks: boolean = false): Tile | null {
         let ni = this.i + DI[dir];
@@ -386,35 +326,6 @@ class Tile {
         let nj = this.j + DJ_CORNER[dir];
         return grid.corners[nj][ni];
     }
-
-    /*updateSprites() {
-        let temp_frame = new Frame(this, Vector2.zero, 0);
-        for (let j = 0; j <= RESOLUTION; j++) {
-            for (let i = 0; i <= RESOLUTION; i++) {
-                temp_frame.pos.set(i / RESOLUTION, j / RESOLUTION);
-                this.verts[j][i].copy(grid.frame2screen(temp_frame))
-            }
-        }
-    }
-
-    drawBackground() {
-        // return
-        Shaku.gfx.useEffect(background_effect);
-
-        this.drawSprites();
-
-        // @ts-ignore
-        Shaku.gfx.useEffect(null);
-    }
-
-    drawSprites() {
-        for (let j = 0; j < RESOLUTION; j++) {
-            for (let i = 0; i < RESOLUTION; i++) {
-                Shaku.gfx.drawSprite(this.sprites[j][i]);
-            }
-        }
-        Shaku.gfx.spritesBatch.end();
-    }*/
 
     // from https://iquilezles.org/articles/ibilinear/
     invBilinear(screen_pos: Vector2): Vector2 | null {
@@ -584,14 +495,15 @@ class Gimmick {
 
         // end 1 & rope
         if (player.holding === this && player.holding_side === 1) {
+            let player_hand = player.frame.clone().move(1, .15)!
             // rope
             gfx.drawLinesStrip([
                 grid.frame2screen(new Frame(this.tile, new Vector2(0.2, .99), this.corner)),
-                grid.frame2screen(player.frame),
+                grid.frame2screen(player_hand),
             ], ropeColor);
 
             // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player.frame), CONFIG.tile_size * .1), ropeColor);
+            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player_hand), CONFIG.tile_size * .1), ropeColor);
         } else {
             // rope            
             gfx.drawLinesStrip([
@@ -605,14 +517,15 @@ class Gimmick {
 
         // end 2
         if (player.holding === this && player.holding_side === 2) {
+            let player_hand = player.frame.clone().move(1, .15)!
             // rope
             gfx.drawLinesStrip([
                 grid.frame2screen(new Frame(this.tile, new Vector2(.99, 0.2), this.corner)),
-                grid.frame2screen(player.frame),
+                grid.frame2screen(player_hand),
             ], ropeColor);
 
             // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player.frame), CONFIG.tile_size * .1), ropeColor);
+            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player_hand), CONFIG.tile_size * .1), ropeColor);
         } else {
             // rope            
             gfx.drawLinesStrip([
@@ -639,10 +552,10 @@ class Player {
     draw() {
         // triangle pointing up
         gfx.drawLinesStrip([
-            grid.frame2screen(this.frame.clone().move(1, -.4)!),
-            grid.frame2screen(this.frame.clone().move(0, .2)!.move(1, .4)!),
-            grid.frame2screen(this.frame.clone().move(0, -.2)!.move(1, .4)!),
-            grid.frame2screen(this.frame.clone().move(1, -.4)!), // close the loop
+            grid.frame2screen(this.frame.clone().move(1, -.3)!),
+            grid.frame2screen(this.frame.clone().move(0, .2)!.move(1, .48)!),
+            grid.frame2screen(this.frame.clone().move(0, -.2)!.move(1, .48)!),
+            grid.frame2screen(this.frame.clone().move(1, -.3)!), // close the loop
         ], Color.magenta);
     }
 }
@@ -656,7 +569,8 @@ class Peg {
     }
 
     draw() {
-        Shaku.gfx.outlineCircle(new Circle(grid.frame2screen(new Frame(this.tile, Vector2.half, 0)), CONFIG.tile_size * .13), Color.black);
+        Shaku.gfx.outlineCircle(new Circle(grid.frame2screen(new Frame(this.tile, Vector2.half, 0)), CONFIG.tile_size * .13),
+            this.used ? ropeColor : Color.black);
     }
 }
 
@@ -697,10 +611,10 @@ class Target {
         let frame = new Frame(this.tile, Vector2.half, this.direction);
 
         gfx.drawLinesStrip([
-            grid.frame2screen(frame.clone().move(0, -.25)!.move(1, -.5)!),
-            grid.frame2screen(frame.clone().move(0, -.25)!.move(1, .25)!),
-            grid.frame2screen(frame.clone().move(0, .25)!.move(1, .25)!),
-            grid.frame2screen(frame.clone().move(0, .25)!.move(1, -.5)!),
+            grid.frame2screen(frame.clone().move(0, -.25)!.move(1, .5)!),
+            grid.frame2screen(frame.clone().move(0, -.25)!.move(3, .25)!),
+            grid.frame2screen(frame.clone().move(0, .25)!.move(3, .25)!),
+            grid.frame2screen(frame.clone().move(0, .25)!.move(1, .5)!),
         ], Color.magenta);
     }
 }
@@ -728,7 +642,7 @@ grid.tiles[5][4].wall = true;
 grid.tiles[5][6].wall = true;
 grid.tiles[5][7].wall = true;
 
-let target = new Target(grid.tiles[2][3], 3);
+let target = new Target(grid.tiles[2][3], 1);
 
 let pegs = [
     new Peg(grid.tiles[4][4]),
@@ -777,6 +691,7 @@ function stopHolding() {
     player.holding_side = null;
 }
 
+let won = false;
 // do a single main loop step and request the next step
 function step() {
     // start a new frame and clear screen
@@ -951,6 +866,13 @@ function step() {
                 stopHolding();
             }
         }
+    }
+
+    if (!won && (player.frame.tile === target.tile) && (player.frame.dir === target.direction)) { // player.frame.dir === target.direction
+        console.log(player.frame.dir, target.direction);
+        console.log(player.frame.dir === target.direction);
+        document.getElementById("won")!.style.display = "block";
+        won = true;
     }
 
     grid.update(Shaku.gameTime.delta);
