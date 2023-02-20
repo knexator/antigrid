@@ -455,6 +455,8 @@ class Frame {
 const ropeColor = Color.cyan;
 /** The two rings situated on the corners of a tile, and the rope connecting them. */
 class Gimmick {
+    public visual_1: Vector2 | null;
+    public visual_2: Vector2 | null;
     constructor(
         public tile: Tile,
         /** if the rings extended, they would meet at this corner */
@@ -466,6 +468,9 @@ class Gimmick {
     ) {
         peg1.used = true;
         peg2.used = true;
+
+        this.visual_1 = null;
+        this.visual_2 = null; grid.frame2screen(new Frame(this.peg2.tile, Vector2.half, 0));
     }
 
     draw() {
@@ -494,48 +499,37 @@ class Gimmick {
         ], ropeColor);
 
         // end 1 & rope
+        let visual_1 = this.visual_1;
         if (player.holding === this && player.holding_side === 1) {
-            let player_hand = player.frame.clone().move(1, .15)!
-            // rope
-            gfx.drawLinesStrip([
-                grid.frame2screen(new Frame(this.tile, new Vector2(0.2, .99), this.corner)),
-                grid.frame2screen(player_hand),
-            ], ropeColor);
-
-            // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player_hand), CONFIG.tile_size * .1), ropeColor);
-        } else {
-            // rope            
-            gfx.drawLinesStrip([
-                grid.frame2screen(new Frame(this.tile, new Vector2(0.2, .99), this.corner)),
-                grid.frame2screen(new Frame(this.peg1.tile, Vector2.half, 0)),
-            ], ropeColor);
-
-            // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(new Frame(this.peg1.tile, Vector2.half, 0)), CONFIG.tile_size * .1), ropeColor);
+            visual_1 = grid.frame2screen(player.frame.clone().move(1, .15)!);
         }
+        if (visual_1 === null) {
+            visual_1 = grid.frame2screen(new Frame(this.peg1.tile, Vector2.half, 0));
+        }
+        // rope
+        gfx.drawLinesStrip([
+            grid.frame2screen(new Frame(this.tile, new Vector2(0.2, .99), this.corner)),
+            visual_1,
+        ], ropeColor);
+        // ball
+        Shaku.gfx.fillCircle(new Circle(visual_1, CONFIG.tile_size * .1), ropeColor);
 
-        // end 2
+        // end 2 & rope
+        let visual_2 = this.visual_2;
         if (player.holding === this && player.holding_side === 2) {
-            let player_hand = player.frame.clone().move(1, .15)!
-            // rope
-            gfx.drawLinesStrip([
-                grid.frame2screen(new Frame(this.tile, new Vector2(.99, 0.2), this.corner)),
-                grid.frame2screen(player_hand),
-            ], ropeColor);
-
-            // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(player_hand), CONFIG.tile_size * .1), ropeColor);
-        } else {
-            // rope            
-            gfx.drawLinesStrip([
-                grid.frame2screen(new Frame(this.tile, new Vector2(.99, 0.2), this.corner)),
-                grid.frame2screen(new Frame(this.peg2.tile, Vector2.half, 0)),
-            ], ropeColor);
-
-            // ball
-            Shaku.gfx.fillCircle(new Circle(grid.frame2screen(new Frame(this.peg2.tile, Vector2.half, 0)), CONFIG.tile_size * .1), ropeColor);
+            visual_2 = grid.frame2screen(player.frame.clone().move(1, .15)!);
         }
+        if (visual_2 === null) {
+            visual_2 = grid.frame2screen(new Frame(this.peg2.tile, Vector2.half, 0))!;
+        }
+        // rope
+        gfx.drawLinesStrip([
+            grid.frame2screen(new Frame(this.tile, new Vector2(.99, 0.2), this.corner)),
+            visual_2,
+        ], ropeColor);
+
+        // ball
+        Shaku.gfx.fillCircle(new Circle(visual_2, CONFIG.tile_size * .1), ropeColor);
     }
 }
 
@@ -676,14 +670,35 @@ let player = new Player(new Frame(grid.tiles[4][4], Vector2.half, 0));
 
 function stopHolding() {
     if (player.holding) {
+        let holding = player.holding;
         if (player.holding_side === 1) {
+            let originalFolded = player.holding.folded;
             let otherExtended = player.holding.peg2.tile !== player.holding.tile.adjacent(player.holding.corner);
             let pegTile = player.holding.tile.adjacent(ccwDir(player.holding.corner));
-            player.holding.folded = (player.holding.peg1.tile === pegTile) ? (otherExtended ? 1 : 0) : 1;
+            let targetFolded = (player.holding.peg1.tile === pegTile) ? (otherExtended ? 1 : 0) : 1;
+
+            let originalVisual = grid.frame2screen(player.frame.clone().move(1, .15)!);
+            holding.visual_1 = originalVisual;
+            new Animator({}).duration(.15).onUpdate((t: number) => {
+                holding.visual_1 = Vector2.lerp(originalVisual, grid.frame2screen(new Frame(holding.peg1.tile, Vector2.half, 0))!, t);
+                holding.folded = lerp(originalFolded, targetFolded, t);
+            }).then(() => {
+                holding.visual_1 = null;
+            }).play();
         } else {
+            let originalFolded = player.holding.folded;
             let otherExtended = player.holding.peg1.tile !== player.holding.tile.adjacent(ccwDir(player.holding.corner));
             let pegTile = player.holding.tile.adjacent(player.holding.corner);
-            player.holding.folded = (player.holding.peg2.tile === pegTile) ? (otherExtended ? 1 : 0) : 1;
+            let targetFolded = (player.holding.peg2.tile === pegTile) ? (otherExtended ? 1 : 0) : 1;
+
+            let originalVisual = grid.frame2screen(player.frame.clone().move(1, .15)!);
+            holding.visual_2 = originalVisual;
+            new Animator({}).duration(.15).onUpdate((t: number) => {
+                holding.visual_2 = Vector2.lerp(originalVisual, grid.frame2screen(new Frame(holding.peg2.tile, Vector2.half, 0))!, t);
+                holding.folded = lerp(originalFolded, targetFolded, t);
+            }).then(() => {
+                holding.visual_2 = null;
+            }).play();
         }
     }
 
@@ -868,9 +883,7 @@ function step() {
         }
     }
 
-    if (!won && (player.frame.tile === target.tile) && (player.frame.dir === target.direction)) { // player.frame.dir === target.direction
-        console.log(player.frame.dir, target.direction);
-        console.log(player.frame.dir === target.direction);
+    if (!won && (player.frame.tile === target.tile) && (player.frame.dir === target.direction)) {
         document.getElementById("won")!.style.display = "block";
         won = true;
     }

@@ -2094,7 +2094,7 @@ var require_animator = __commonJS({
   "../Shaku/lib/utils/animator.js"(exports, module) {
     "use strict";
     var _autoAnimators = [];
-    var Animator = class {
+    var Animator2 = class {
       constructor(target2) {
         this._target = target2;
         this._fromValues = {};
@@ -2121,13 +2121,16 @@ var require_animator = __commonJS({
         if (this._progress < 0) {
           return;
         }
+        let lerp_factor = this._easing(this._progress);
+        if (this._onUpdate) {
+          this._onUpdate(lerp_factor);
+        }
         if (this._progress >= 1) {
           this._progress = 1;
           if (this._onFinish) {
             this._onFinish();
           }
         }
-        let lerp_factor = this._easing(this._progress);
         for (let key in this._toValues) {
           let keyParts = this._toValues[key].keyParts;
           let toValue = this._toValues[key].value;
@@ -2153,9 +2156,6 @@ var require_animator = __commonJS({
             throw new Error(`Animator issue: from-value for key '${key}' is not a number, and its class type don't implement a 'lerp()' method!`);
           }
           this._setValueToTarget(keyParts, newValue);
-        }
-        if (this._onUpdate) {
-          this._onUpdate(lerp_factor);
         }
         if (this._repeats && this._progress >= 1) {
           if (typeof this._repeats === "number") {
@@ -2298,7 +2298,7 @@ var require_animator = __commonJS({
     function smoothDampEasing(t) {
       return t * t;
     }
-    module.exports = Animator;
+    module.exports = Animator2;
   }
 });
 
@@ -10473,6 +10473,7 @@ var import_color = __toESM(require_color());
 var import_vector2 = __toESM(require_vector2());
 var import_shaku2 = __toESM(require_lib());
 var import_circle = __toESM(require_circle());
+var import_animator = __toESM(require_animator());
 var import_math_helper = __toESM(require_math_helper());
 var CONFIG = {
   resolution: 3,
@@ -10793,7 +10794,12 @@ var Gimmick = class {
     this.folded = folded;
     peg1.used = true;
     peg2.used = true;
+    this.visual_1 = null;
+    this.visual_2 = null;
+    grid.frame2screen(new Frame(this.peg2.tile, import_vector2.default.half, 0));
   }
+  visual_1;
+  visual_2;
   draw() {
     import_shaku2.gfx.drawLinesStrip([
       grid.frame2screen(new Frame(this.tile, new import_vector2.default(0, 0.99), this.corner)),
@@ -10813,34 +10819,30 @@ var Gimmick = class {
       grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
       grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner))
     ], ropeColor);
+    let visual_1 = this.visual_1;
     if (player.holding === this && player.holding_side === 1) {
-      let player_hand = player.frame.clone().move(1, 0.15);
-      import_shaku2.gfx.drawLinesStrip([
-        grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
-        grid.frame2screen(player_hand)
-      ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player_hand), CONFIG.tile_size * 0.1), ropeColor);
-    } else {
-      import_shaku2.gfx.drawLinesStrip([
-        grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
-        grid.frame2screen(new Frame(this.peg1.tile, import_vector2.default.half, 0))
-      ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(new Frame(this.peg1.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.1), ropeColor);
+      visual_1 = grid.frame2screen(player.frame.clone().move(1, 0.15));
     }
+    if (visual_1 === null) {
+      visual_1 = grid.frame2screen(new Frame(this.peg1.tile, import_vector2.default.half, 0));
+    }
+    import_shaku2.gfx.drawLinesStrip([
+      grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.2, 0.99), this.corner)),
+      visual_1
+    ], ropeColor);
+    import_shaku.default.gfx.fillCircle(new import_circle.default(visual_1, CONFIG.tile_size * 0.1), ropeColor);
+    let visual_2 = this.visual_2;
     if (player.holding === this && player.holding_side === 2) {
-      let player_hand = player.frame.clone().move(1, 0.15);
-      import_shaku2.gfx.drawLinesStrip([
-        grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner)),
-        grid.frame2screen(player_hand)
-      ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(player_hand), CONFIG.tile_size * 0.1), ropeColor);
-    } else {
-      import_shaku2.gfx.drawLinesStrip([
-        grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner)),
-        grid.frame2screen(new Frame(this.peg2.tile, import_vector2.default.half, 0))
-      ], ropeColor);
-      import_shaku.default.gfx.fillCircle(new import_circle.default(grid.frame2screen(new Frame(this.peg2.tile, import_vector2.default.half, 0)), CONFIG.tile_size * 0.1), ropeColor);
+      visual_2 = grid.frame2screen(player.frame.clone().move(1, 0.15));
     }
+    if (visual_2 === null) {
+      visual_2 = grid.frame2screen(new Frame(this.peg2.tile, import_vector2.default.half, 0));
+    }
+    import_shaku2.gfx.drawLinesStrip([
+      grid.frame2screen(new Frame(this.tile, new import_vector2.default(0.99, 0.2), this.corner)),
+      visual_2
+    ], ropeColor);
+    import_shaku.default.gfx.fillCircle(new import_circle.default(visual_2, CONFIG.tile_size * 0.1), ropeColor);
   }
 };
 var Player = class {
@@ -10954,14 +10956,33 @@ var stairs = [
 var player = new Player(new Frame(grid.tiles[4][4], import_vector2.default.half, 0));
 function stopHolding() {
   if (player.holding) {
+    let holding = player.holding;
     if (player.holding_side === 1) {
+      let originalFolded = player.holding.folded;
       let otherExtended = player.holding.peg2.tile !== player.holding.tile.adjacent(player.holding.corner);
       let pegTile = player.holding.tile.adjacent(ccwDir(player.holding.corner));
-      player.holding.folded = player.holding.peg1.tile === pegTile ? otherExtended ? 1 : 0 : 1;
+      let targetFolded = player.holding.peg1.tile === pegTile ? otherExtended ? 1 : 0 : 1;
+      let originalVisual = grid.frame2screen(player.frame.clone().move(1, 0.15));
+      holding.visual_1 = originalVisual;
+      new import_animator.default({}).duration(0.15).onUpdate((t) => {
+        holding.visual_1 = import_vector2.default.lerp(originalVisual, grid.frame2screen(new Frame(holding.peg1.tile, import_vector2.default.half, 0)), t);
+        holding.folded = (0, import_math_helper.lerp)(originalFolded, targetFolded, t);
+      }).then(() => {
+        holding.visual_1 = null;
+      }).play();
     } else {
+      let originalFolded = player.holding.folded;
       let otherExtended = player.holding.peg1.tile !== player.holding.tile.adjacent(ccwDir(player.holding.corner));
       let pegTile = player.holding.tile.adjacent(player.holding.corner);
-      player.holding.folded = player.holding.peg2.tile === pegTile ? otherExtended ? 1 : 0 : 1;
+      let targetFolded = player.holding.peg2.tile === pegTile ? otherExtended ? 1 : 0 : 1;
+      let originalVisual = grid.frame2screen(player.frame.clone().move(1, 0.15));
+      holding.visual_2 = originalVisual;
+      new import_animator.default({}).duration(0.15).onUpdate((t) => {
+        holding.visual_2 = import_vector2.default.lerp(originalVisual, grid.frame2screen(new Frame(holding.peg2.tile, import_vector2.default.half, 0)), t);
+        holding.folded = (0, import_math_helper.lerp)(originalFolded, targetFolded, t);
+      }).then(() => {
+        holding.visual_2 = null;
+      }).play();
     }
   }
   player.holding = null;
@@ -11111,8 +11132,6 @@ function step() {
     }
   }
   if (!won && player.frame.tile === target.tile && player.frame.dir === target.direction) {
-    console.log(player.frame.dir, target.direction);
-    console.log(player.frame.dir === target.direction);
     document.getElementById("won").style.display = "block";
     won = true;
   }
