@@ -10544,12 +10544,12 @@ var Grid = class {
           let N = 5;
           for (let k = 0; k <= N; k++) {
             import_shaku2.gfx.drawLines([
-              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 * k / N, 0), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(0, k / N), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 + 0.5 * k / N, 0), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 * k / N, 1), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(1 - 0.5 * k / N, 0), 0)),
               this.frame2screen(new Frame(tile, new import_vector2.default(1, k / N), 0)),
-              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 + 0.5 * k / N, 1), 0))
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 - 0.5 * k / N, 0), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(1 - 0.5 * k / N, 1), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(0, k / N), 0)),
+              this.frame2screen(new Frame(tile, new import_vector2.default(0.5 - 0.5 * k / N, 1), 0))
             ], import_color.default.black);
           }
           if (i === 2) {

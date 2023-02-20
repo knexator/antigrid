@@ -125,6 +125,17 @@ class Grid {
                     let N = 5;
                     for (let k = 0; k <= N; k++) {
                         gfx.drawLines([
+                            this.frame2screen(new Frame(tile, new Vector2(1 - .5 * k / N, 0), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(1, k / N), 0)),
+
+                            this.frame2screen(new Frame(tile, new Vector2(.5 - .5 * k / N, 0), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(1 - .5 * k / N, 1), 0)),
+
+                            this.frame2screen(new Frame(tile, new Vector2(0, k / N), 0)),
+                            this.frame2screen(new Frame(tile, new Vector2(.5 - .5 * k / N, 1), 0)),
+                        ], Color.black);
+
+                        /*gfx.drawLines([
                             this.frame2screen(new Frame(tile, new Vector2(.5 * k / N, 0), 0)),
                             this.frame2screen(new Frame(tile, new Vector2(0, k / N), 0)),
 
@@ -133,7 +144,7 @@ class Grid {
 
                             this.frame2screen(new Frame(tile, new Vector2(1, k / N), 0)),
                             this.frame2screen(new Frame(tile, new Vector2(.5 + .5 * k / N, 1), 0)),
-                        ], Color.black);
+                        ], Color.black);*/
                     }
 
                     if (i === 2) {
